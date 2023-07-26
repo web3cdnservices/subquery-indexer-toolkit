@@ -1,0 +1,165 @@
+version: "3"
+
+x-logging:
+  &default-logging
+  options:
+    max-file: '1'
+    compress: 'false'
+  driver: local
+
+networks:
+  default:
+    name: subquery_indexer_services
+    driver: bridge
+
+
+services:
+  postgres:
+    image: postgres:12-alpine
+    container_name: indexer_db
+    restart: always
+    expose:
+      - 5432
+    volumes:
+      - .data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASS}
+    logging: *default-logging
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  coordinator:
+    image: subquerynetwork/indexer-coordinator:v1.3.0
+    container_name: indexer_coordinator
+    restart: always
+    ports:
+      - "${PRIVATE_NETWORK_IP}:8000:8000"
+    depends_on:
+      "postgres":
+        condition: service_healthy
+    volumes:
+      - .data/subquery/.projects:/usr/projects
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - --network=kepler
+      - --postgres-host=postgres
+      - --ws-endpoint=${PRIMARY_BLOCKCHAIN_RPC}
+      - --postgres-password=${DB_PASS}
+      - --postgres-port=5432
+      - --port=8000
+      - --start-port=3100
+      - --secret-key=${SECRET_KEY}
+      - --mmrPath=/home
+#      - --debug=true
+    logging: *default-logging
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-i",
+          "-X POST",
+          "http://indexer_coordinator:8000/graphql",
+          "-H 'Content-Type: application/json'",
+          "-d '{ \"query\": \"query { accountMetadata { network } }\" }'"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+      image: redis:7-alpine
+      container_name: indexer_cache
+      restart: always
+      expose:
+        - 6379
+      logging: *default-logging
+      environment:
+        - ALLOW_EMPTY_PASSWORD=yes
+      healthcheck:
+        test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+
+  proxy:
+    image: subquerynetwork/indexer-proxy:v1.2.1
+    container_name: indexer_proxy
+    restart: always
+    expose:
+      - 8375
+    ports:
+      - 7370:7370/udp
+    logging: *default-logging
+    depends_on:
+      "coordinator":
+        condition: service_healthy
+    command:
+      - --host=0.0.0.0
+      - --port=8375
+      - --auth
+      - --network=kepler
+      - --jwt-secret=${JWT_SECRET_TOKEN}
+      - --secret-key=${SECRET_KEY}
+      - --service-url=http://indexer_coordinator:8000
+      - --network-endpoint=${PRIMARY_BLOCKCHAIN_RPC}
+      - --token-duration=24
+      - --redis-endpoint=redis://indexer_cache
+      - --metrics-token=${PROMETHEUS_METRICS_TOKEN}
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://indexer_proxy:8375/healthy >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.indexer-service.loadbalancer.server.port=8375"
+      - "traefik.http.routers.indexer-service.entrypoints=websecure"
+      - "traefik.http.routers.indexer-service.tls.certresolver=myresolver"
+      - "traefik.http.routers.indexer-service.rule=Host(`$DOMAIN`)"
+
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: always
+    expose:
+      - "8082"
+    ports:
+      - "443:443"
+      - "80:80"
+    command:
+      - "--api=true"
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--log.level=DEBUG"
+      - "--entrypoints.http.address=:80"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.file.filename=/dynamic_config.yml"
+      - "--entrypoints.websecure.address=:443"
+      - "--entryPoints.metrics.address=:8082"
+      - "--metrics.prometheus.entryPoint=metrics"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=${CERT_RESOLVER}"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    volumes:
+      - "./.data/traefik/letsencrypt:/letsencrypt"
+      - "./.data/traefik/config/dynamic_config.yml:/dynamic_config.yml"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    labels:
+      - "traefik.enable=true"
+      - traefik.http.routers.traefik.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.traefik.entrypoints=https
+      - traefik.http.routers.traefik.service=api@internal
+      - traefik.http.routers.traefik.tls=true
+      - traefik.http.routers.traefik.tls.certresolver=myresolver
+
+  whoami:
+    image: containous/whoami
+    labels:
+      - traefik.http.routers.https.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.https.entrypoints=https
+      - traefik.http.routers.https.tls=true

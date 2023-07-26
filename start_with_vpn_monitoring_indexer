@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source .env
+IP_PARTS=(${WIREGUARD_SUBNET//./ })
+PRIVATE_NETWORK_IP="${IP_PARTS[0]}.${IP_PARTS[1]}.${IP_PARTS[2]}.10"
+#PRIVATE_NETWORK_IP="0.0.0.0"
+
+docker-compose -f docker-compose-privatenetwork.yml  up -d
+# TODO generate client cert.
+
+docker-compose -f docker-compose-indexer.yml up -d
+
+docker-compose -f docker-compose-monitoring.yml up -d

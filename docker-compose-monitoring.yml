@@ -1,0 +1,55 @@
+version: "3"
+
+x-logging:
+  &default-logging
+  options:
+    max-file: '1'
+    compress: 'false'
+  driver: local
+
+networks:
+  default:
+    name: subquery_indexer_services
+    driver: bridge
+
+
+services:
+
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: indexer_prometheus
+    volumes:
+      - ./.data/prometheus.yml:/etc/prometheus/prometheus.yml
+    command: --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - "${PRIVATE_NETWORK_IP}:9090:9090"
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+      - /:/host:ro,rslave
+    command:
+      - '--path.rootfs=/host'
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    ports:
+      - "${PRIVATE_NETWORK_IP}:9717:9100
+    restart: always
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: indexer_grafana
+    ports:
+      - "${PRIVATE_NETWORK_IP}:3000:3000"
+    volumes:
+      - ./.data/datasources:/etc/grafana/provisioning/datasources
+      - ./.data/dashboards:/etc/grafana/provisioning/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
