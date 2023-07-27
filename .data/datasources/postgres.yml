@@ -9,7 +9,7 @@ datasources:
    user: postgres
    database: postgres
    secureJsonData:
-     password: 2M1RAdBi3FK5O
+     password: OdSFEMdZizadt
    jsonData:
      sslmode: disable
      postgresVersion: 906

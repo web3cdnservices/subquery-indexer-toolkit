@@ -6,4 +6,4 @@ datasources:
     access: proxy
     url: http://indexer_prometheus:9090
     headers:
-      Authorization: Bearer  rbLN2MUc7lLQq
+      Authorization: Bearer  oLKT6fhLAwGsh

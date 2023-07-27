@@ -1,0 +1,9 @@
+apiVersion: 1
+datasources:
+  - access: proxy
+    editable: true
+    name: graphql_indexer
+    orgId: 1
+    type: fifemon-graphql-datasource
+    url: http://indexer_coordinator:8000/graphql
+    version: 1

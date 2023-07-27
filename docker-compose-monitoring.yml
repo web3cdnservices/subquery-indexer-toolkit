@@ -61,3 +61,12 @@ services:
       - ./.data/dashboards:/etc/grafana/provisioning/dashboards
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+
+  prometheus_graphql_exporter:
+    image: ricardbejarano/graphql_exporter:latest
+    container_name: prometheus_graphql_exporter
+    networks:
+      subquery_indexer:
+        ipv4_address: ${DOCKER_SUBNET_PREFIX}.11
+    expose:
+      - 9199
