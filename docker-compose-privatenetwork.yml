@@ -8,16 +8,18 @@ x-logging:
   driver: local
 
 networks:
-  default:
-    name: subquery_indexer_services
-    driver: bridge
-
+  subquery_indexer:
+    name: subquery_indexer
+    external: true
 
 services:
 
   wireguard:
     image: lscr.io/linuxserver/wireguard:latest
     container_name: wireguard
+    networks:
+      subquery_indexer:
+        ipv4_address: ${DOCKER_SUBNET_PREFIX}.11
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
@@ -25,13 +27,13 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - SERVERPORT=51820
-      - PEERS=1
-      - PEERDNS=auto
+      - SERVERPORT=${WIREGUARD_PORT}
+      - PEERS=2
+#      - PEERDNS=auto
       - INTERNAL_SUBNET=${WIREGUARD_SUBNET}
+      - ALLOWEDIPS=${WIREGUARD_SUBNET}/24,${DOCKER_SUBNET_MASK}/24
     volumes:
       - .data/wireguard/config:/config
-      - .data/wireguard:/wgdata
     ports:
       - ${WIREGUARD_PORT}:51820/udp
     sysctls:

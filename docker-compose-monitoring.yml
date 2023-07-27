@@ -8,10 +8,9 @@ x-logging:
   driver: local
 
 networks:
-  default:
-    name: subquery_indexer_services
-    driver: bridge
-
+  subquery_indexer:
+    name: subquery_indexer
+    external: true
 
 services:
 
@@ -22,12 +21,20 @@ services:
     volumes:
       - ./.data/prometheus.yml:/etc/prometheus/prometheus.yml
     command: --config.file=/etc/prometheus/prometheus.yml
-    ports:
-      - "${PRIVATE_NETWORK_IP}:9090:9090"
+    networks:
+      subquery_indexer:
+        ipv4_address: ${DOCKER_SUBNET_PREFIX}.8
+    expose:
+      - 9090
 
   node-exporter:
     image: quay.io/prometheus/node-exporter:latest
     container_name: node_exporter
+    expose:
+      - 9100
+    networks:
+      subquery_indexer:
+        ipv4_address: ${DOCKER_SUBNET_PREFIX}.9
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -39,15 +46,16 @@ services:
       - '--path.sysfs=/host/sys'
       - --collector.filesystem.ignored-mount-points
       - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
-    ports:
-      - "${PRIVATE_NETWORK_IP}:9717:9100
     restart: always
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:10.0.3
     container_name: indexer_grafana
-    ports:
-      - "${PRIVATE_NETWORK_IP}:3000:3000"
+    networks:
+      subquery_indexer:
+        ipv4_address: ${DOCKER_SUBNET_PREFIX}.10
+    expose:
+      - 3000
     volumes:
       - ./.data/datasources:/etc/grafana/provisioning/datasources
       - ./.data/dashboards:/etc/grafana/provisioning/dashboards

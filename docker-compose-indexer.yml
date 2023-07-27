@@ -8,16 +8,20 @@ x-logging:
   driver: local
 
 networks:
-  default:
-    name: subquery_indexer_services
-    driver: bridge
-
+  subquery_indexer:
+    name: subquery_indexer
+    external: true
 
 services:
+
+
   postgres:
     image: postgres:12-alpine
     container_name: indexer_db
     restart: always
+    networks:
+      subquery_indexer:
+        ipv4_address: ${DOCKER_SUBNET_PREFIX}.2
     expose:
       - 5432
     volumes:
@@ -35,8 +39,11 @@ services:
     image: subquerynetwork/indexer-coordinator:v1.3.0
     container_name: indexer_coordinator
     restart: always
-    ports:
-      - "${PRIVATE_NETWORK_IP}:8000:8000"
+    networks:
+      subquery_indexer:
+        ipv4_address: ${DOCKER_SUBNET_PREFIX}.3
+    expose:
+      - 8000
     depends_on:
       "postgres":
         condition: service_healthy
@@ -74,6 +81,9 @@ services:
       image: redis:7-alpine
       container_name: indexer_cache
       restart: always
+      networks:
+        subquery_indexer:
+          ipv4_address: ${DOCKER_SUBNET_PREFIX}.4
       expose:
         - 6379
       logging: *default-logging
@@ -86,6 +96,9 @@ services:
     image: subquerynetwork/indexer-proxy:v1.2.1
     container_name: indexer_proxy
     restart: always
+    networks:
+      subquery_indexer:
+        ipv4_address: ${DOCKER_SUBNET_PREFIX}.5
     expose:
       - 8375
     ports:
@@ -122,6 +135,9 @@ services:
     image: traefik:latest
     container_name: traefik
     restart: always
+    networks:
+      subquery_indexer:
+        ipv4_address: ${DOCKER_SUBNET_PREFIX}.6
     expose:
       - "8082"
     ports:
@@ -131,7 +147,7 @@ services:
       - "--api=true"
       - "--api.insecure=true"
       - "--api.dashboard=true"
-      - "--log.level=DEBUG"
+#      - "--log.level=DEBUG"
       - "--entrypoints.http.address=:80"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -140,7 +156,7 @@ services:
       - "--entryPoints.metrics.address=:8082"
       - "--metrics.prometheus.entryPoint=metrics"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.caserver=https://acme-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.myresolver.acme.email=${CERT_RESOLVER}"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
@@ -159,6 +175,10 @@ services:
 
   whoami:
     image: containous/whoami
+    container_name: whoami
+    networks:
+      subquery_indexer:
+        ipv4_address: ${DOCKER_SUBNET_PREFIX}.7
     labels:
       - traefik.http.routers.https.rule=Host(`${DOMAIN}`)
       - traefik.http.routers.https.entrypoints=https

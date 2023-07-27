@@ -1,0 +1,60 @@
+#!/bin/bash
+
+ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
+BASE_PATH=`realpath $ROOT_PATH/../`
+WG_CONFIG_PATH=`realpath $ROOT_PATH/../.data/wireguard/config`
+
+source "$ROOT_PATH/../.env"
+IP_PARTS=(${WIREGUARD_SUBNET//./ })
+PRIVATE_NETWORK_IP="${IP_PARTS[0]}.${IP_PARTS[1]}.${IP_PARTS[2]}.1"
+
+DOCKER_SUBNET_PARTS=(${DOCKER_SUBNET_MASK//./ })
+DOCKER_SUBNET_PREFIX="${DOCKER_SUBNET_PARTS[0]}.${DOCKER_SUBNET_PARTS[1]}.${DOCKER_SUBNET_PARTS[2]}"
+
+export PRIVATE_NETWORK_IP=$PRIVATE_NETWORK_IP
+export DOCKER_SUBNET_PREFIX=$DOCKER_SUBNET_PREFIX
+
+
+
+rm "$BASE_PATH/SubqueryIndexerHandbook.tar.gz"  2> /dev/null
+rm -R -f "$BASE_PATH/SubqueryIndexerHandbook"  2> /dev/null
+
+mkdir $BASE_PATH/SubqueryIndexerHandbook
+mkdir $BASE_PATH/SubqueryIndexerHandbook/wireguard
+
+cp  $BASE_PATH/.env  $BASE_PATH/SubqueryIndexerHandbook/env.dump
+cp   ${WG_CONFIG_PATH}/peer1/peer1.conf $BASE_PATH/SubqueryIndexerHandbook/wireguard/client1.conf
+cp   ${WG_CONFIG_PATH}/peer2/peer2.conf $BASE_PATH/SubqueryIndexerHandbook/wireguard/client2.conf
+touch "$BASE_PATH/SubqueryIndexerHandbook/Subquery_Indexer_Handbook.txt"
+
+echo -en "$EINS \033[$FG\033[44m ############## GENERATING Indexer Hanbook #############  \033[0m\n\n\n\n"
+
+echo  -en "  Please save content below to your computer.\n \x1b[33;43m \x1b[30m PS don\'t panic, this content also will be saved to  $BASE_PATH/SubqueryIndexerHandbook.tar.gz file \x1b[0m \n\n\n"
+
+
+echo -en " \x1b[31m ----------------------------------------------------------------------------------------- \x1b[0m  \n\n"
+echo -en "☸ Indexer coordinator UI:  http://${DOCKER_SUBNET_PREFIX}.3:8000 \n" | tee -a $BASE_PATH/SubqueryIndexerHandbook/Subquery_Indexer_Handbook.txt
+
+
+echo -en "♡ Indexer Healthcheck url:  https://${DOMAIN}/healthy \n" | tee -a $BASE_PATH/SubqueryIndexerHandbook/Subquery_Indexer_Handbook.txt
+
+echo -en "✍ Indexer url:  https://${DOMAIN} \n" | tee  -a $BASE_PATH/SubqueryIndexerHandbook/Subquery_Indexer_Handbook.txt
+
+
+echo -en "❤ Indexer Grafana:  http://${DOCKER_SUBNET_PREFIX}.10:3000 \n" | tee -a  $BASE_PATH/SubqueryIndexerHandbook/Subquery_Indexer_Handbook.txt
+echo -en "        Login: admin" | tee -a $BASE_PATH/SubqueryIndexerHandbook/Subquery_Indexer_Handbook.txt
+echo -en "        Password: ${GRAFANA_ADMIN_PASSWORD} \n\n" | tee -a  $BASE_PATH/SubqueryIndexerHandbook/Subquery_Indexer_Handbook.txt
+
+
+echo -en "💫 Wireguard client configuration file:  ${WG_CONFIG_PATH}/peer1/peer1.conf \n\n" | tee -a $BASE_PATH/SubqueryIndexerHandbook/Subquery_Indexer_Handbook.txt
+echo -en "💫 Wireguard client(2) configuration file:  ${WG_CONFIG_PATH}/peer2/peer2.conf \n\n" | tee -a $BASE_PATH/SubqueryIndexerHandbook/Subquery_Indexer_Handbook.txt
+
+echo -en "\n\n \x1b[31m ----------------------------------------------------------------------------------------- \x1b[0m \n "
+
+
+`tar  -cjf  $BASE_PATH/SubqueryIndexerHandbook.tar.gz -C $BASE_PATH/SubqueryIndexerHandbook $(ls -A $BASE_PATH/SubqueryIndexerHandbook)` 
+rm -r -f $BASE_PATH/SubqueryIndexerHandbook
+
+
+echo -en "❤ Configuration ready. Please download  \x1b[9;4m $BASE_PATH/SubqueryIndexerHandbook.tar.gz \x1b[0m from server to your work pc. And continue reading to @Connecting to wireguard network \n" 
+echo -en "\n\n"

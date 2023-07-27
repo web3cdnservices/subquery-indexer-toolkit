@@ -1,0 +1,50 @@
+#!/bin/bash
+ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
+domain_expression="^([a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\.)+[a-zA-Z]{2,}$"
+email_expression="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,12}$"
+if [ -f "${ROOT_PATH}/../.env" ]; then
+    echo -e "\033[0;31m ✘ CRITICAl. \n Configuration .env file already exists. \n Please be careful. If you wont generate new keys, please remove .env file. \n\n rm .env. \033[0m"
+    exit
+fi
+
+cp $ROOT_PATH/../.env.default $ROOT_PATH/../.env
+
+echo -e "\033[0;33m ♨ Generating configuration  \033[0m\n"
+
+read -p '✍ Enter Indexer domain: ' input_domain
+
+while [ "$input_domain" == "" ] || ! [[ "$input_domain" =~ $domain_expression ]]
+do
+  echo -e "\033[0;31m  ✘ Incorrect domain name. Please check twice and send again. \033[0m \n"
+  read -p '✍ Enter Indexer domain: ' input_domain
+done
+
+
+read -p '✍ Enter Indexer email: ' input_email
+
+while [ "$input_email" == "" ] || ! [[ "$input_email" =~ $email_expression ]]
+do
+  echo -e "\033[0;31m ✘ Incorrect email. Please check twice and send again. \033[0m \n"
+  read -p "✍ Enter Indexer email: " input_email
+done
+
+sed -i "s|DOMAIN=".*"|DOMAIN=\"$input_domain\"|" $ROOT_PATH/../.env
+sed -i "s|CERT_RESOLVER=".*"|CERT_RESOLVER=\"$input_email\"|" $ROOT_PATH/../.env
+
+echo -e "\033[0;32m ✣ Generating Postgres random password. \033[0m \n"
+sed -i "s|DB_PASS=".*"|DB_PASS=\"`tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo ''`\"|" $ROOT_PATH/../.env
+
+echo -e "\033[0;32m ✣ Generating Secret key. \033[0m \n"
+sed -i "s|SECRET_KEY=".*"|SECRET_KEY=\"`tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo ''`\"|" $ROOT_PATH/../.env
+
+echo -e "\033[0;32m ✣ Generating JWT token for Coordinator. \033[0m \n"
+sed -i "s|JWT_SECRET_TOKEN=".*"|JWT_SECRET_TOKEN=\"`tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo ''`\"|" $ROOT_PATH/../.env
+
+echo -e "\033[0;32m ✣ Generating token for Prometheus metrics exporter. \033[0m \n"
+sed -i "s|PROMETHEUS_METRICS_TOKEN=".*"|PROMETHEUS_METRICS_TOKEN=\"`tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo ''`\"|" $ROOT_PATH/../.env
+
+echo -e "\033[0;32m ✣ Generating Grafana password. \033[0m \n"
+sed -i "s|GRAFANA_ADMIN_PASSWORD=".*"|GRAFANA_ADMIN_PASSWORD=\"`tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo ''`\"|" $ROOT_PATH/../.env
+
+
+echo -e "\033[0;32m ✔ Everything is OK. Please check .env file manualy for correct domain and email and lets start.. \033[0m \n"

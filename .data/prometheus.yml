@@ -7,17 +7,21 @@ scrape_configs:
     metrics_path: /metrics
     scheme: http
     static_configs:
-      - targets: ['10.253.1.1:8000'] # this is targeting coordinator endpoint.
+      - targets: ['indexer_coordinator:8000']
 
   - job_name: query_count
     metrics_path: /metrics
     scheme: http
-    bearer_token: '${BEARER_TOKEN_CORD}'          # this is same as proxy metrics-token
+    bearer_token: rbLN2MUc7lLQq
     static_configs:
-      - targets: ['10.253.1.1:80']   # this is targeting proxy endpoint.
+      - targets: ['indexer_proxy:8375']
 
   - job_name: node_exporter
     metrics_path: /metrics
     scheme: http
     static_configs:
-      - targets: ['10.253.1.1:9717']
+      - targets: ['node_exporter:9100']
+
+  - job_name: 'traefik'
+    static_configs:
+      - targets: ['traefik:8082']
