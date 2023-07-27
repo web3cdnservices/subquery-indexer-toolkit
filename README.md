@@ -47,6 +47,12 @@ bash ./tools/start_indexer_with_wireguard
 ![image](https://github.com/web3cdnservices/subquery-indexer-toolkit/assets/115787312/d0a372c3-9d5a-45c3-8fc2-17f83df748aa)
 
 **After this command all services succesfully initialized. Next step - Connect indexer wallet to coordinator and generate operator wallet.** 
+```
+Your SSL certificated will be requested automatically and reissue if needed.
+```
+
+![image](https://github.com/web3cdnservices/subquery-indexer-toolkit/assets/115787312/dcaba754-3669-4052-9acb-6f334acff2c4)
+
 
 ## Upgrade
 ```
