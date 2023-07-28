@@ -1,0 +1,4 @@
+scrape_configs:
+  - job_name: 'prometheus_bash_exporter'
+    static_configs:
+      - targets: ['prometheus_bash_exporter:9300']

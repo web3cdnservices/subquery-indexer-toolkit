@@ -1,0 +1,53 @@
+#!/bin/bash
+ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
+
+SIGNATURE=`curl -s 'https://kepler-auth.subquery.network/channel/sign' \
+  -H 'Accept: application/json, text/plain, */*' \
+  -H 'Accept-Language: en-US,en;q=0.7' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Connection: keep-alive' \
+  -H 'Content-Type: application/json' \
+  -H 'Origin: https://kepler.subquery.network' \
+  -H 'Pragma: no-cache' \
+  -H 'Sec-Fetch-Dest: empty' \
+  -H 'Sec-Fetch-Mode: cors' \
+  -H 'Sec-Fetch-Site: same-site' \
+  -H 'Sec-GPC: 1' \
+  -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36' \
+  -H 'sec-ch-ua: "Not/A)Brand";v="99", "Brave";v="115", "Chromium";v="115"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Linux"' \
+  --data-raw '{"deployment":"QmUVXKjcsYkS6WfJQfeD7juDbnMWCuo5qKgRRo893LajE2","channelId":"0x73c6415bebac497b5b45f1fe72823bce230be191cecb93698cd87036616e2852"}' \
+  `
+
+
+PROJECTS_COMMAND="curl -s https://api.subquery.network/sq/subquery/kepler-network
+  -H 'authority: api.subquery.network' 
+ -H 'authorization: ${SIGNATURE}'
+  -H 'cache-control: no-cache' 
+  -H 'content-type: application/json' 
+ -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36' 
+  --data-raw '{\"operationName\":\"GetProjects\",\"variables\":{\"orderBy\":\"ID_ASC\",\"offset\":0},\"query\":\"query GetProjects(\$offset: Int, \$orderBy: [ProjectsOrderBy\u0021] = ID_ASC) {\\n  projects(first: 100, offset: \$offset, orderBy: \$orderBy) {\\n    totalCount\\n    nodes {\\n      ...ProjectFields\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\\nfragment ProjectFields on Project {\\n  id\\n  owner\\n  metadata\\n  currentVersion\\n  currentDeployment\\n  updatedTimestamp\\n  createdTimestamp\\n  __typename\\n}\"}' 
+"
+
+PROJECTS=`eval $PROJECTS_COMMAND`
+
+rm -f  $ROOT_PATH/../.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/*.yml
+
+echo $PROJECTS | jq -r '.data.projects.nodes | to_entries | .[].value.metadata ' | while read -r repo;
+do
+PROJECT_INFO=`curl -s -X POST https://unauthipfs.subquery.network/ipfs/api/v0/cat?arg=$repo`
+
+DEPLOYMENT_ID=`echo $PROJECT_INFO | jq -r .deploymentId`
+DEPLOYMENT_NAME=`echo $PROJECT_INFO | jq -r .name`
+
+cp $ROOT_PATH/../.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/subquery_deployment_metrics.template $ROOT_PATH/../.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/$DEPLOYMENT_ID.yml
+
+sed -i "s|%DEPLOTMENTID%|$DEPLOYMENT_ID|"  $ROOT_PATH/../.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/$DEPLOYMENT_ID.yml
+
+sed -i "s|%DEPLOYMENTNAME%|$DEPLOYMENT_NAME|"  $ROOT_PATH/../.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/$DEPLOYMENT_ID.yml
+
+echo -e "Creating configuration for [ $DEPLOYMENT_ID ] - $DEPLOYMENT_NAME ";
+done
+
+echo -e  "Operation finalized"

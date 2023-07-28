@@ -1,0 +1,28 @@
+scrape_configs:
+  - job_name: "graphql_exporter_Qmarrhgrpqw5VK71rMtb4GARpPvq8ajMjAqnjnWZFLV61N"
+    metrics_path: "/query"
+    params:
+      endpoint: ["http://indexer_coordinator:8000/graphql"]
+      query:
+        - |
+          query {
+            queryMetadata(id:"Qmarrhgrpqw5VK71rMtb4GARpPvq8ajMjAqnjnWZFLV61N"){
+              targetHeight
+              lastProcessedHeight
+              lastProcessedTimestamp
+              specName
+              chain
+              indexerNodeVersion
+              queryNodeVersion
+              indexerStatus
+              queryStatus
+              __typename
+            }
+          }
+
+    static_configs:
+      - targets: ["prometheus_graphql_exporter:9199"]
+      - labels:
+          deploymentId: "Qmarrhgrpqw5VK71rMtb4GARpPvq8ajMjAqnjnWZFLV61N"
+          deploymentName: "Acala Dictionary"
+          

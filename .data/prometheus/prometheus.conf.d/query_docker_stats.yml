@@ -1,0 +1,6 @@
+scrape_configs:
+  - job_name: query_docker_stats
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets: ['indexer_coordinator:8000']

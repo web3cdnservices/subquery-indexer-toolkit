@@ -1,0 +1,28 @@
+scrape_configs:
+  - job_name: "graphql_exporter_QmV6sbiPyTDUjcQNJs2eGcAQp2SMXL2BU6qdv5aKrRr7Hg"
+    metrics_path: "/query"
+    params:
+      endpoint: ["http://indexer_coordinator:8000/graphql"]
+      query:
+        - |
+          query {
+            queryMetadata(id:"QmV6sbiPyTDUjcQNJs2eGcAQp2SMXL2BU6qdv5aKrRr7Hg"){
+              targetHeight
+              lastProcessedHeight
+              lastProcessedTimestamp
+              specName
+              chain
+              indexerNodeVersion
+              queryNodeVersion
+              indexerStatus
+              queryStatus
+              __typename
+            }
+          }
+
+    static_configs:
+      - targets: ["prometheus_graphql_exporter:9199"]
+      - labels:
+          deploymentId: "QmV6sbiPyTDUjcQNJs2eGcAQp2SMXL2BU6qdv5aKrRr7Hg"
+          deploymentName: "Kepler Exchange"
+          
