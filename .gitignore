@@ -2,5 +2,9 @@
 .data/subquery
 .data/wireguard
 .data/traefik
+.data/grafana/datasources/*.template
+.data/prometheus/*.template
+.data/prometheus/prometheus.conf.d/*.template
+.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/*.template
 .env
 SubqueryIndexerHandbook.tar.gz
