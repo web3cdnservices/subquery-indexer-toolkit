@@ -24,10 +24,27 @@ export PRIVATE_NETWORK_IP=$PRIVATE_NETWORK_IP
 export GATEWAY_IP_ADDRESS=$GATEWAY_IP_ADDRESS
 export DOCKER_SUBNET_PREFIX=$DOCKER_SUBNET_PREFIX
 
+# Prometheus configuration
+for i in  $ROOT_PATH/../.data/prometheus/prometheus.conf.d/*.template
+do
+     cp -n -a  $i  ${i%%.template}
+done
+
+cp -n $ROOT_PATH/../.data/prometheus/prometheus.yml.template  $ROOT_PATH/../.data/prometheus/prometheus.yml
 sed -i "s|bearer_token: ".*"|bearer_token: $PROMETHEUS_METRICS_TOKEN|" $ROOT_PATH/../.data/prometheus/prometheus.conf.d/query_count.yml
-#sed -i "s|targets: \['".*":|targets: \['$PRIVATE_NETWORK_IP:|" $ROOT_PATH/../.data/prometheus.yml
+
+bash "./generate_prometheus_graphql_scrapers"
+
+# Grafana
+for i in  $ROOT_PATH/../.data/grafana/datasources/*.template
+do
+     cp -n -a  $i  ${i%%.template}
+done
+
+
 sed -i "s|Authorization: Bearer ".*"|Authorization: Bearer  $PROMETHEUS_METRICS_TOKEN|" $ROOT_PATH/../.data/grafana/datasources/prometheus.yml
 sed -i  "s|password: ".*"|password: $DB_PASS|" $ROOT_PATH/../.data/grafana/datasources/postgres.yml
+
 
 docker-compose -f $ROOT_PATH/../docker-compose-network.yml up -d
 

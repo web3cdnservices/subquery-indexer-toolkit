@@ -76,6 +76,7 @@ services:
   prometheus_bash_exporter:
     image: prometheus_bash_exporter:latest
     container_name: prometheus_bash_exporter
+    restart: always
     command:
       - '/app/server'
       - '--debug=true'

@@ -34,20 +34,25 @@ PROJECTS=`eval $PROJECTS_COMMAND`
 
 rm -f  $ROOT_PATH/../.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/*.yml
 
-echo $PROJECTS | jq -r '.data.projects.nodes | to_entries | .[].value.metadata ' | while read -r repo;
+echo $PROJECTS | jq -r '.data.projects.nodes | to_entries | .[].key ' | while read -r repo;
 do
-PROJECT_INFO=`curl -s -X POST https://unauthipfs.subquery.network/ipfs/api/v0/cat?arg=$repo`
+    METADATA=$(echo $PROJECTS | jq -r ".data.projects.nodes | to_entries | .[$repo].value.metadata ")
+    CURRENT_DEPLOYMENT=$(echo $PROJECTS | jq -r ".data.projects.nodes | to_entries | .[$repo].value.currentDeployment ")
 
-DEPLOYMENT_ID=`echo $PROJECT_INFO | jq -r .deploymentId`
-DEPLOYMENT_NAME=`echo $PROJECT_INFO | jq -r .name`
+    PROJECT_INFO=`curl -s -X POST https://unauthipfs.subquery.network/ipfs/api/v0/cat?arg=$METADATA`
 
-cp $ROOT_PATH/../.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/subquery_deployment_metrics.template $ROOT_PATH/../.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/$DEPLOYMENT_ID.yml
 
-sed -i "s|%DEPLOTMENTID%|$DEPLOYMENT_ID|"  $ROOT_PATH/../.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/$DEPLOYMENT_ID.yml
+    DEPLOYMENT_ID=`echo $PROJECT_INFO | jq -r .deploymentId`
+    DEPLOYMENT_NAME=`echo $PROJECT_INFO | jq -r .name`
 
-sed -i "s|%DEPLOYMENTNAME%|$DEPLOYMENT_NAME|"  $ROOT_PATH/../.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/$DEPLOYMENT_ID.yml
 
-echo -e "Creating configuration for [ $DEPLOYMENT_ID ] - $DEPLOYMENT_NAME ";
+    cp $ROOT_PATH/../.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/subquery_deployment_metrics.template $ROOT_PATH/../.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/$CURRENT_DEPLOYMENT.yml
+
+    sed -i "s|%DEPLOTMENTID%|$CURRENT_DEPLOYMENT|"  $ROOT_PATH/../.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/$CURRENT_DEPLOYMENT.yml
+
+    sed -i "s|%DEPLOYMENTNAME%|$CURRENT_DEPLOYMENT|"  $ROOT_PATH/../.data/prometheus/prometheus.conf.d/subquery_deployment_metrics/$CURRENT_DEPLOYMENT.yml
+
+    echo -e "  Creating indexing configuration for [ $CURRENT_DEPLOYMENT ] - $DEPLOYMENT_NAME ";
 done
 
-echo -e  "Operation finalized"
+#echo -e  "Operation finalized"

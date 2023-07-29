@@ -22,7 +22,6 @@ scrape_configs:
 
     static_configs:
       - targets: ["prometheus_graphql_exporter:9199"]
-      - labels:
+        labels:
           deploymentId: "%DEPLOTMENTID%"
           deploymentName: "%DEPLOYMENTNAME%"
-
