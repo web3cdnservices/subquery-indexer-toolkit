@@ -113,6 +113,10 @@ Basic indexer stat.
 ![image](https://github.com/web3cdnservices/subquery-indexer-toolkit/assets/115787312/94730cae-0c2c-4cae-8fc4-621c9808aed0)
 
 
+*** New dashboards ***
+![screencapture-192-168-155-8-3000-d-c8889d8b-d737-4e86-bdaa-9926870775f2-subquery-indexer-heartbeat-2023-07-28-16_27_36](https://github.com/web3cdnservices/subquery-indexer-toolkit/assets/115787312/949b1738-0ca3-4dbe-a699-03a92b89756c)
+
+
   #### Guys, project from indexer for indexers. Fill free for Issues.
   ```
   Very soon postgres migration for low space servers! Be patient.
