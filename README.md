@@ -116,6 +116,10 @@ Basic indexer stat.
 *** New dashboards ***
 ![screencapture-192-168-155-8-3000-d-c8889d8b-d737-4e86-bdaa-9926870775f2-subquery-indexer-heartbeat-2023-07-28-16_27_36](https://github.com/web3cdnservices/subquery-indexer-toolkit/assets/115787312/949b1738-0ca3-4dbe-a699-03a92b89756c)
 
+***New features for monitoring & alerting indexers***
+![image_2023-07-30_05-15-03](https://github.com/web3cdnservices/subquery-indexer-toolkit/assets/115787312/299320f7-42f4-4a98-baaf-b3b1f738aa26)
+
+
 
   #### Guys, project from indexer for indexers. Fill free for Issues.
   ```
