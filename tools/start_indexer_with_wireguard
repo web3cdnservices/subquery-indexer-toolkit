@@ -33,7 +33,7 @@ done
 cp -n $ROOT_PATH/../.data/prometheus/prometheus.yml.template  $ROOT_PATH/../.data/prometheus/prometheus.yml
 sed -i "s|bearer_token: ".*"|bearer_token: $PROMETHEUS_METRICS_TOKEN|" $ROOT_PATH/../.data/prometheus/prometheus.conf.d/query_count.yml
 
-bash "./generate_prometheus_graphql_scrapers"
+bash "${ROOT_PATH}/generate_prometheus_graphql_scrapers"
 
 # Grafana
 for i in  $ROOT_PATH/../.data/grafana/datasources/*.template
@@ -43,7 +43,7 @@ done
 
 
 sed -i "s|Authorization: Bearer ".*"|Authorization: Bearer  $PROMETHEUS_METRICS_TOKEN|" $ROOT_PATH/../.data/grafana/datasources/prometheus.yml
-sed -i  "s|password: ".*"|password: $DB_PASS|" $ROOT_PATH/../.data/grafana/datasources/indexer_postgres.yml
+sed -i  "s|password: ".*"|password: \"$DB_PASS\"|" $ROOT_PATH/../.data/grafana/datasources/indexer_postgres.yml
 
 
 docker-compose -f $ROOT_PATH/../docker-compose-network.yml up -d
