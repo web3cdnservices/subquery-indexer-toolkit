@@ -76,18 +76,19 @@ Fell free copy paste configuratin and connect with it. Nothing nedd to change.
 
 ## Internal addresses
 **By default Wireguard mask 10.253.1.0/24, but you can set you own in .env file**
+Internal network mask: 172.29.13.0/24
 All addresses and services accessible via private network!
 
 |  Service |  Address | Annotation |
 | :------------ | :------------ | :------------ |
-|  Postgres |  10.253.1.2 | |
-|  Redis | 10.253.1.4  | |
-| Indexer Coordinator  |  [http://10.253.1.3:8000](http://10.253.1.3:8000 "http://10.253.1.3:8000") | |
-| Indexer Proxy  |  [http://10.253.1.5:8375](http://10.253.1.5:8375 "http://10.253.1.5:8375") | |
-| Traefik  |  10.253.1.6 | ports 8082(metrics), 80(public), 443(public with Letsencrypt) |
-| Prometheus  |  [http://10.253.1.8:9090](http://10.253.1.8:9090 "http://10.253.1.8:9090") | |
-| Node Exporter  |  [http://10.253.1.9:9100](http://10.253.1.9:9100 "http://10.253.1.9:9100") | |
-| Grafana  |  [http://10.253.1.10:3000](http://10.253.1.10:3000 "http://10.253.1.10:3000") | |
+|  Postgres |  172.29.13.2 | |
+|  Redis | 172.29.13.4  | |
+| Indexer Coordinator  |  [http://172.29.13.3:8000](http://172.29.13.3:8000 "http://172.29.13.3:8000") | |
+| Indexer Proxy  |  [http://172.29.13.5:8375](http://172.29.13.5:8375 "http://172.29.13.5:8375") | |
+| Traefik  |  172.29.13.6 | ports 8082(metrics), 80(public), 443(public with Letsencrypt) |
+| Prometheus  |  [http://172.29.13.8:9090](http://172.29.13.8:9090 "http://172.29.13.8:9090") | |
+| Node Exporter  |  [http://172.29.13.9:9100](http://172.29.13.9:9100 "http://172.29.13.9:9100") | |
+| Grafana  |  [http://172.29.13.10:3000](http://172.29.13.10:3000 "http://172.29.13.10:3000") | |
 
 Wireguard by default use 816 port. But you can set it manually in .env file. This file NEVER overwrites, Script preventing override.
 
