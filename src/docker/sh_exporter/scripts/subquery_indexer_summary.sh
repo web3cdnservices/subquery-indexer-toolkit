@@ -6,17 +6,10 @@ source $ROOT_PATH/lib/vars
 INDEXER_ADDR=`bash $ROOT_PATH/lib/get_indexer_address_from_proxy_endpoint.sh`
 INDEXER_ADDR_NOPREFIX=`echo $INDEXER_ADDR | cut -c 3-45`
 
-#generate_result_container()
-#{
-#  cat <<EOF
-#{"labels": {"hostname": "node-1","env":"indexer-summary"}, "results": {"self_stake": 22, "total_stake": 11,"total_deployments":$INDEXER_TOTAL_DEPLOYMENTS } }
-#EOF
-#}
-
 generate_result_container()
 {
   cat <<EOF
-{"labels": {"hostname": "node-1","env":"indexer-summary"}, "results": {"self_stake": ${SELF_STAKED_BALANCE}, "total_stake": ${INDEXER_TOTAL_STAKE},"total_deployments":$INDEXER_TOTAL_DEPLOYMENTS,"count_active_paygs": ${COUNT_INEXER_ACTIVE_PAYGS} } }
+[{"labels": {"hostname": "node-1","env":"indexer-summary"}, "results": {"self_stake": ${SELF_STAKED_BALANCE}, "total_stake": ${INDEXER_TOTAL_STAKE},"total_deployments":$INDEXER_TOTAL_DEPLOYMENTS,"count_active_paygs": ${COUNT_INEXER_ACTIVE_PAYGS} } }]
 EOF
 }
 
@@ -36,19 +29,7 @@ INDEXER_TOTAL_DEPLOYMENTS=$(hex_to_decimal $(call_contract_method  "eth_call" "0
 USER_ACTIVE_PAYGS=$(curl -s "${INTERNAL_COORDINATOR_URL}graphql" -H 'content-type: application/json' --data-raw '{"operationName":"UsersQuery","variables":{},"query":"query UsersQuery {\n  getAlivePaygs {\n    id\n    overflow\n    threshold\n    expiration\n  }\n}\n"}' )
 
 COUNT_INEXER_ACTIVE_PAYGS=$(echo $USER_ACTIVE_PAYGS |  jq ".data.getAlivePaygs | length")
-#echo $USERS_QUERY_RESULT | jq ".data.getAlivePaygs | length"
 
-#SELF_STAKED_BALANCE=$(call_contract_method  "eth_call" "0x1c503039000000000000000000000000${INDEXER_ADDR_NOPREFIX}000000000000000000000000${INDEXER_ADDR_NOPREFIX}" "0x379190a8638d2234533eb6fa4575012fd21eaea5")
-
-
-
-#echo -e "Indexer self stake: $SELF_STAKED_BALANCE \n"
-#echo -e "Indexer total stake:  $INDEXER_TOTAL_STAKE \n"
-#echo -e "Indexer Total Deployments $INDEXER_TOTAL_DEPLOYMENTS \n"
-
-
-#echo "Operator Balance $OPERATOR_BALANCE MATIC"
-#echo "Indexer balance $INDEXER_BALANCE kSQT"
 
 echo "$(generate_result_container)"
 

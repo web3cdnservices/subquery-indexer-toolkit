@@ -16,7 +16,6 @@ EOF
 
 call_contract_method()
 {
-#echo $(generate_contract_payload $1 $2 $3)
   RESULT=$(curl -s $RPC --data-raw "$(generate_contract_payload $1 $2 $3)" | jq -r ".result")
   echo  $RESULT
 }
@@ -24,8 +23,6 @@ call_contract_method()
 
 call_method()
 {
-#  echo "$(generate_payload $1 $2 $3)"
-#echo "----"
   RESULT=$(curl -s $RPC --data-raw "$(generate_payload $1 $2 $3)" | jq -r ".result")
   echo  $RESULT
 }
@@ -33,9 +30,6 @@ call_method()
 hex_to_decimal()
 {
 RESULT=$(echo "ibase=16; $(echo $1 | sed "s/0x//" | sed 's/^0*//' | tr [:lower:] [:upper:]) " | bc | cut -c $2-$3) 
-#RESULT=$(echo $1)
-#RESULT=$(echo "$(echo $1 | sed "s/0x//" | sed 's/^0*//') " )
 
-#RESULT=$(echo "ibase=16; $(echo $1  | sed 's/^0*//' | sed 's/^0*//' | tr [:lower:] [:upper:]) " | bc ) 
 echo $RESULT
 }

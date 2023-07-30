@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gree-gorey/bash-exporter/pkg/run"
+	"github.com/bash-exporter/v2/pkg/run"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -71,14 +71,17 @@ func Run(interval int, path string, names []string, labelsArr []string, debug bo
 		wg.Add(len(names))
 		for _, name := range names {
 			o := run.Output{}
-//                        log.Println(string(o))
+
 			o.Job = strings.Split(name, ".")[0]
 			oArr = append(oArr, &o)
 			thisPath := path + "/" + name
 			p := run.Params{UseWg: true, Wg: &wg, Path: &thisPath}
+
 			go o.RunJob(&p)
+
 		}
 		wg.Wait()
+
 //		 if debug == true {
 //		 	ser, err := json.Marshal(o)
 //		 	if err != nil {
@@ -87,20 +90,27 @@ func Run(interval int, path string, names []string, labelsArr []string, debug bo
 //		 	log.Println(string(ser))
 //		 }
 		verbMetrics.Reset()
-		for _, o := range oArr {
 
-			for metric, value := range o.Schema.Results {
-				for _, label := range labelsArr {
-					if _, ok := o.Schema.Labels[label]; !ok {
-					   o.Schema.Labels[label] = ""
-					}
+
+                for _, o := range oArr {
+
+//		    if o.Schema {
+                        for _, rowItem := range o.Schema {
+				for metric, value := range rowItem.Results {
+                                for _, label := range labelsArr {
+                                        if _, ok := rowItem.Labels[label]; !ok {
+                                           rowItem.Labels[label] = ""
+                                        }
+                                }
+                                rowItem.Labels["verb"] = metric
+                                rowItem.Labels["job"] = o.Job
+                                fmt.Println(rowItem.Labels)
+                                verbMetrics.With(prometheus.Labels(rowItem.Labels)).Set(float64(value))
 				}
-				o.Schema.Labels["verb"] = metric
-				o.Schema.Labels["job"] = o.Job
-				fmt.Println(o.Schema.Labels)
-				verbMetrics.With(prometheus.Labels(o.Schema.Labels)).Set(float64(value))
-			}
-		}
+			    }
+//		}
+            }
+
 		time.Sleep(time.Duration(interval) * time.Second)
 	}
 }

@@ -14,16 +14,16 @@ RUN go mod download
 
 # Copy local code to the container image.
 COPY . ./
-RUN ls ./ 
+#RUN ls ./ 
 # Build the binary.
 RUN go build -v -o server
 
 FROM ubuntu:23.10
 RUN set -x && apt-get update && apt-get install -y \
-    ca-certificates bash curl bc jq && \
+    ca-certificates bash curl bc jq nodejs npm && npm -g install axios  bignumber.js lodash fetch && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/server /app/server
 
 # Run the web service on container startup.
-CMD ["/app/server --debug=true"]
+CMD ["/app/server"]

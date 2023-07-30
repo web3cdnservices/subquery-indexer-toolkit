@@ -87,7 +87,8 @@ services:
     restart: always
     command:
       - '/app/server'
-      - '--debug=true'
+      - '-debug=true'
+      - '-labels=displayName,deploymentId'
     volumes:
       - ./src/docker/sh_exporter/scripts:/scripts
     networks:

@@ -24,21 +24,30 @@ export PRIVATE_NETWORK_IP=$PRIVATE_NETWORK_IP
 export GATEWAY_IP_ADDRESS=$GATEWAY_IP_ADDRESS
 export DOCKER_SUBNET_PREFIX=$DOCKER_SUBNET_PREFIX
 
+chmod +x $ROOT_PATH/../src/docker/sh_exporter/scripts/*
+
 # Prometheus configuration
-for i in  $ROOT_PATH/../.data/prometheus/prometheus.conf.d/*.template
+for i in  $ROOT_PATH/../src/configuration/prometheus/prometheus.conf.d/*.template
 do
-     cp -n -a  $i  ${i%%.template}
+     FILENAME=$(basename ${i})
+     cp -n -a  $i  $ROOT_PATH/../.data/prometheus/prometheus.conf.d/${FILENAME%%.template}
 done
 
-cp -n $ROOT_PATH/../.data/prometheus/prometheus.yml.template  $ROOT_PATH/../.data/prometheus/prometheus.yml
+for i in  $ROOT_PATH/../src/configuration/prometheus/*.template
+do
+     FILENAME=$(basename ${i})
+     cp -n -a  $i  $ROOT_PATH/../.data/prometheus/${FILENAME%%.template}
+done
+
+#cp -n $ROOT_PATH/../.data/prometheus/prometheus.yml.template  $ROOT_PATH/../.data/prometheus/prometheus.yml
+
 sed -i "s|bearer_token: ".*"|bearer_token: $PROMETHEUS_METRICS_TOKEN|" $ROOT_PATH/../.data/prometheus/prometheus.conf.d/query_count.yml
 
-bash "${ROOT_PATH}/generate_prometheus_graphql_scrapers"
-
 # Grafana
-for i in  $ROOT_PATH/../.data/grafana/datasources/*.template
+for i in  $ROOT_PATH/../src/configuration/grafana/datasources/*.template
 do
-     cp -n -a  $i  ${i%%.template}
+     FILENAME=$(basename ${i})
+     cp -n -a  $i  $ROOT_PATH/../.data/grafana/datasources/${FILENAME%%.template}
 done
 
 

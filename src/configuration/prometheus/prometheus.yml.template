@@ -3,7 +3,7 @@ global:
   evaluation_interval: 10s
 
 scrape_config_files:
-  - prometheus.conf.d/subquery_deployment_metrics/*.yml
+#  - prometheus.conf.d/subquery_deployment_metrics/*.yml
   - prometheus.conf.d/*.yml
   - prometheus.conf.d/subquery_metrics/*.yml
 

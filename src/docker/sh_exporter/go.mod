@@ -1,13 +1,11 @@
-module bash-exporter.com/m/v2
+module github.com/bash-exporter/v2
 
 go 1.20
 
-require (
-	github.com/gree-gorey/bash-exporter v0.0.0-20190704084616-74d2e389265a
-	github.com/prometheus/client_golang v1.16.0
-)
+
 
 require (
+	github.com/prometheus/client_golang v1.16.0
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect

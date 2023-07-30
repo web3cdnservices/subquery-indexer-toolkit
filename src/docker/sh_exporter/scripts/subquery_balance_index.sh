@@ -9,7 +9,7 @@ INDEXER_ADDR_NOPREFIX=`echo $INDEXER_ADDR | cut -c 3-45`
 generate_result_container()
 {
   cat <<EOF
-{"labels": {"hostname": "node-1","env":"balance"}, "results": {"operator_balance": ${OPERATOR_BALANCE}, "indexer_balance": ${INDEXER_BALANCE} } }
+[{"labels": {"hostname": "node-1","env":"balance"}, "results": {"operator_balance": ${OPERATOR_BALANCE}, "indexer_balance": ${INDEXER_BALANCE} } }]
 EOF
 }
 
@@ -21,9 +21,6 @@ OPERATOR_BALANCE=$(hex_to_decimal $(call_method  "eth_getBalance" "$INDEXER_OPER
 INDEXER_BALANCE=$(hex_to_decimal $(call_contract_method  "eth_call" "0x70a08231000000000000000000000000$INDEXER_ADDR_NOPREFIX" "0xcee50ee839a2ab3914cf4c3cbac78f6f11e0c937") 1 30 )
 
 
-
-#echo "Operator Balance $OPERATOR_BALANCE MATIC"
-#echo "Indexer balance $INDEXER_BALANCE kSQT"
 
 echo "$(generate_result_container)"
 

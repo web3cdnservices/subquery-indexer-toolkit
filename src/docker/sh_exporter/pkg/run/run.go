@@ -7,7 +7,7 @@ import (
 )
 
 type Output struct {
-	Schema Schema `json:""`
+        Schema []Schema `json:""`
 	Job    string `json:""`
 }
 
@@ -25,14 +25,14 @@ func (o *Output) RunJob(p *Params) {
 
 func (o *Output) RunExec(path *string) {
 
-	out, err := exec.Command(*path).Output()
+	out, err := exec.Command(*path).CombinedOutput()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Exception from command execution",err)
 	}
 
 	err = json.Unmarshal(out, &o.Schema)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Fatal exception then reading json",err)
 	}
 
 }
