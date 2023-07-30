@@ -7,6 +7,7 @@ scrape_configs:
         - |
           query {
             queryMetadata(id:"%DEPLOTMENTID%"){
+              indexerHealthy
               targetHeight
               lastProcessedHeight
               lastProcessedTimestamp

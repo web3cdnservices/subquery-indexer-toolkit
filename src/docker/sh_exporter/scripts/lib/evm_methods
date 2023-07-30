@@ -1,0 +1,41 @@
+RPC="https://polygon-rpc.com"
+generate_payload()
+{
+  cat <<EOF
+{"jsonrpc": "2.0","method": "$1","params": ["$2", "latest"],"id": 1}
+EOF
+}
+
+generate_contract_payload()
+{
+  cat <<EOF
+{"jsonrpc":"2.0","id":4,"method":"$1","params": [{"from":"0x0000000000000000000000000000000000000000","data":"$2","to":"$3"},"latest"]}
+EOF
+}
+
+
+call_contract_method()
+{
+#echo $(generate_contract_payload $1 $2 $3)
+  RESULT=$(curl -s $RPC --data-raw "$(generate_contract_payload $1 $2 $3)" | jq -r ".result")
+  echo  $RESULT
+}
+
+
+call_method()
+{
+#  echo "$(generate_payload $1 $2 $3)"
+#echo "----"
+  RESULT=$(curl -s $RPC --data-raw "$(generate_payload $1 $2 $3)" | jq -r ".result")
+  echo  $RESULT
+}
+
+hex_to_decimal()
+{
+RESULT=$(echo "ibase=16; $(echo $1 | sed "s/0x//" | sed 's/^0*//' | tr [:lower:] [:upper:]) " | bc | cut -c $2-$3) 
+#RESULT=$(echo $1)
+#RESULT=$(echo "$(echo $1 | sed "s/0x//" | sed 's/^0*//') " )
+
+#RESULT=$(echo "ibase=16; $(echo $1  | sed 's/^0*//' | sed 's/^0*//' | tr [:lower:] [:upper:]) " | bc ) 
+echo $RESULT
+}

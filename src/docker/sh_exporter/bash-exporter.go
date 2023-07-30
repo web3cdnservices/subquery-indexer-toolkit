@@ -51,8 +51,11 @@ func main() {
 
 	var names []string
 	for _, f := range files {
-		if f.Name()[0:1] != "." {
-			names = append(names, f.Name())
+		if f.Name()[0:1] != "."  {
+			if f.IsDir() == false {
+				names = append(names, f.Name())
+//				log.Println(string(f.Name()))
+			}
 		}
 	}
 
