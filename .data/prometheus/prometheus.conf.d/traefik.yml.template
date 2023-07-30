@@ -1,4 +1,4 @@
 scrape_configs:
   - job_name: 'traefik'
     static_configs:
-      - targets: ['traefik:8082']1
+      - targets: ['traefik:8082']

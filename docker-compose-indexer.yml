@@ -147,6 +147,8 @@ services:
       - "--api=true"
       - "--api.insecure=true"
       - "--api.dashboard=true"
+      - "--metrics"
+      - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
 #      - "--log.level=DEBUG"
       - "--entrypoints.http.address=:80"
       - "--providers.docker=true"

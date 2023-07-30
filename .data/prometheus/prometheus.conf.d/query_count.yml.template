@@ -5,4 +5,4 @@ scrape_configs:
     scheme: http
     bearer_token: 
     static_configs:
-      - targets: ['indexer_proxy:8375']1
+      - targets: ['indexer_proxy:8375']

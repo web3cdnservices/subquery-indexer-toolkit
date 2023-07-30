@@ -43,7 +43,7 @@ done
 
 
 sed -i "s|Authorization: Bearer ".*"|Authorization: Bearer  $PROMETHEUS_METRICS_TOKEN|" $ROOT_PATH/../.data/grafana/datasources/prometheus.yml
-sed -i  "s|password: ".*"|password: $DB_PASS|" $ROOT_PATH/../.data/grafana/datasources/postgres.yml
+sed -i  "s|password: ".*"|password: $DB_PASS|" $ROOT_PATH/../.data/grafana/datasources/indexer_postgres.yml
 
 
 docker-compose -f $ROOT_PATH/../docker-compose-network.yml up -d
