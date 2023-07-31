@@ -5,7 +5,7 @@ let _=require('lodash');
 (async()=>{
 
 
-  let projects_list_query= await fetch("http://192.168.155.8:8000/graphql", {
+  let projects_list_query= await fetch("http://indexer_coordinator:8000/graphql", {
     "headers": {
       "content-type": "application/json",
     },

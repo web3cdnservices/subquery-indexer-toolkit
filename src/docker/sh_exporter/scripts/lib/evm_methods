@@ -1,4 +1,4 @@
-RPC="https://polygon-rpc.com"
+RPC="https://polygon.llamarpc.com"
 generate_payload()
 {
   cat <<EOF
