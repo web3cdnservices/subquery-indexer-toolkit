@@ -9,7 +9,7 @@ INDEXER_ADDR_NOPREFIX=`echo $INDEXER_ADDR | cut -c 3-45`
 generate_result_container()
 {
   cat <<EOF
-[{"labels": {"hostname": "node-1","env":"balance"}, "results": {"operator_balance": ${OPERATOR_BALANCE}, "indexer_balance": ${INDEXER_BALANCE} } }]
+[{"labels": {"env":"balance"}, "results": {"operator_balance": ${OPERATOR_BALANCE}, "indexer_balance": ${INDEXER_BALANCE} } }]
 EOF
 }
 

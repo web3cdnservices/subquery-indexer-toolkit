@@ -9,7 +9,7 @@ INDEXER_ADDR_NOPREFIX=`echo $INDEXER_ADDR | cut -c 3-45`
 generate_result_container()
 {
   cat <<EOF
-[{"labels": {"hostname": "node-1","env":"indexer-summary"}, "results": {"self_stake": ${SELF_STAKED_BALANCE}, "total_stake": ${INDEXER_TOTAL_STAKE},"total_deployments":$INDEXER_TOTAL_DEPLOYMENTS,"count_active_paygs": ${COUNT_INEXER_ACTIVE_PAYGS} } }]
+[{"labels": {"env":"indexer-summary"}, "results": {"self_stake": ${SELF_STAKED_BALANCE}, "total_stake": ${INDEXER_TOTAL_STAKE},"total_deployments":$INDEXER_TOTAL_DEPLOYMENTS,"count_active_paygs": ${COUNT_INEXER_ACTIVE_PAYGS} } }]
 EOF
 }
 
