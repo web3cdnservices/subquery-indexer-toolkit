@@ -16,14 +16,14 @@ EOF
 
 call_contract_method()
 {
-  RESULT=$(curl -s $RPC --data-raw "$(generate_contract_payload $1 $2 $3)" | jq -r ".result")
+  RESULT=$(curl -H 'content-type: application/json' -s $RPC --data-raw "$(generate_contract_payload $1 $2 $3)" | jq -r ".result")
   echo  $RESULT
 }
 
 
 call_method()
 {
-  RESULT=$(curl -s $RPC --data-raw "$(generate_payload $1 $2 $3)" | jq -r ".result")
+  RESULT=$(curl -H 'content-type: application/json' -s $RPC --data-raw "$(generate_payload $1 $2 $3)" | jq -r ".result")
   echo  $RESULT
 }
 
