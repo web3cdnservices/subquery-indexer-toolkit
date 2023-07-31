@@ -68,6 +68,9 @@ bash ./tools/start_indexer_with_wireguard
 - Macos (https://apps.apple.com/us/app/wireguard/id1451685025?mt=12)
 - Linux (see repos. yum install wireguard, emerge -av wireguard, apt install wireguard)
 - Windows (https://www.wireguard.com/install/)
+  PS also you can have access to coordinator/grafana pr any service anywhere with your android,iphone. (Just import config)
+  - https://play.google.com/store/apps/details?id=com.wireguard.android
+  - https://apps.apple.com/us/app/wireguard/id1441195209
   
 Archive **SubqueryIndexerHandbook.tar.gz** containes wireguard folder with 2 configuration files.
 You need only one. Secondary for secondary device or for team.
