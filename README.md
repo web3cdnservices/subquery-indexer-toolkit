@@ -120,6 +120,9 @@ Basic indexer stat.
 ***New features for monitoring & alerting indexers***
 ![image_2023-07-30_05-15-03](https://github.com/web3cdnservices/subquery-indexer-toolkit/assets/115787312/299320f7-42f4-4a98-baaf-b3b1f738aa26)
 
+*** revision 3 ***
+![subquery_dashboar_demo_3](https://github.com/web3cdnservices/subquery-indexer-toolkit/assets/115787312/7cca8b12-2145-494a-8a48-c577c91f0bde)
+
 
 
   #### Guys, project from indexer for indexers. Fill free for Issues.
