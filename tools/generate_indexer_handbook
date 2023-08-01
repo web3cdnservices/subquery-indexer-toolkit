@@ -29,7 +29,11 @@ mkdir $BASE_PATH/SubqueryIndexerHandbook/wireguard
 
 cp  $BASE_PATH/.env  $BASE_PATH/SubqueryIndexerHandbook/env.dump
 cp   ${WG_CONFIG_PATH}/peer1/peer1.conf $BASE_PATH/SubqueryIndexerHandbook/wireguard/client1.conf
+cp   ${WG_CONFIG_PATH}/peer1/peer1.png $BASE_PATH/SubqueryIndexerHandbook/wireguard/client1.png
+
 cp   ${WG_CONFIG_PATH}/peer2/peer2.conf $BASE_PATH/SubqueryIndexerHandbook/wireguard/client2.conf
+cp   ${WG_CONFIG_PATH}/peer2/peer2.png $BASE_PATH/SubqueryIndexerHandbook/wireguard/client2.png
+
 touch "$BASE_PATH/SubqueryIndexerHandbook/Subquery_Indexer_Handbook.txt"
 
 echo -en "$EINS \033[$FG\033[44m ############## GENERATING Indexer Hanbook #############  \033[0m\n\n\n\n"
