@@ -6,9 +6,10 @@ if [ ! -f "${ROOT_PATH}/../.env" ]; then
     echo -e "\033[0;31m ✘ CRITICAl. \n env does not exists. Please rename .env.default to .env and set correct configuration. \033[0m"
     exit
 fi
-
+set -a
 source $ROOT_PATH/../.env
 source $ROOT_PATH/../.PACKAGE_USE
+set -a
 
 echo -e "\033[0;33m ♨ Start & Update  Subquery indexer  \033[0m\n"
 

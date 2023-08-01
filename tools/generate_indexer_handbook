@@ -4,7 +4,12 @@ ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
 BASE_PATH=`realpath $ROOT_PATH/../`
 WG_CONFIG_PATH=`realpath $ROOT_PATH/../.data/wireguard/config`
 
-source "$ROOT_PATH/../.env"
+set -a
+source $ROOT_PATH/../.env
+source $ROOT_PATH/../.PACKAGE_USE
+set -a
+
+
 IP_PARTS=(${WIREGUARD_SUBNET//./ })
 PRIVATE_NETWORK_IP="${IP_PARTS[0]}.${IP_PARTS[1]}.${IP_PARTS[2]}.1"
 

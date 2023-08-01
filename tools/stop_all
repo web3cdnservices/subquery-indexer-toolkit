@@ -2,8 +2,14 @@
 
 ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
 
+set -a
+source $ROOT_PATH/../.env
+source $ROOT_PATH/../.PACKAGE_USE
+set -a
+
 echo -e "\033[0;33m ♨ Stopping Subquery indexer  \033[0m\n"
-source "$ROOT_PATH/../.env"
+
+
 IP_PARTS=(${WIREGUARD_SUBNET//./ })
 PRIVATE_NETWORK_IP="${IP_PARTS[0]}.${IP_PARTS[1]}.${IP_PARTS[2]}.1"
 
