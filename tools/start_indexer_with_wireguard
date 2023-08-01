@@ -2,6 +2,12 @@
 
 ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
 
+if [ ! -x "$(command -v docker)" ] ||  [ ! -x "$(command -v docker-compose)" ] ||  [ ! -x "$(command -v git)" ] ||  [ ! -x "$(command -v bzip2)" ]   ; then
+    echo "Requirements not installed. Install docker-compose docker.io git curl bzip2"
+    exit 0
+fi
+
+
 if [ ! -f "${ROOT_PATH}/../.env" ]; then
     echo -e "\033[0;31m ✘ CRITICAl. \n env does not exists. Please rename .env.default to .env and set correct configuration. \033[0m"
     exit
