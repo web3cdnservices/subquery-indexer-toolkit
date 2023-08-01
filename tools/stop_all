@@ -19,7 +19,7 @@ DOCKER_SUBNET_PREFIX="${DOCKER_SUBNET_PARTS[0]}.${DOCKER_SUBNET_PARTS[1]}.${DOCK
 export PRIVATE_NETWORK_IP=$PRIVATE_NETWORK_IP
 export DOCKER_SUBNET_PREFIX=$DOCKER_SUBNET_PREFIX
 
-docker-compose -f ${ROOT_PATH}/../docker-compose-privatenetwork.yml -f ${ROOT_PATH}/../docker-compose-indexer.yml -f ${ROOT_PATH}/../docker-compose-monitoring.yml  down
+docker-compose -f ${ROOT_PATH}/../docker-compose-privatenetwork.yml -f ${ROOT_PATH}/../docker-compose-indexer.yml -f ${ROOT_PATH}/../docker-compose-monitoring.yml -f ${ROOT_PATH}/../docker-compose_traefik.yml   down
 
 docker-compose -f ${ROOT_PATH}/../docker-compose-network.yml down
 
