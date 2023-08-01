@@ -60,6 +60,7 @@ services:
       - --start-port=3100
       - --secret-key=${SECRET_KEY}
       - --mmrPath=/home
+      - --ipfs=http://indexer_ipfs:8080/api/v0/
 #      - --debug=true
     logging: *default-logging
     healthcheck:
@@ -130,3 +131,21 @@ services:
       - "traefik.http.routers.indexer-service.entrypoints=websecure"
       - "traefik.http.routers.indexer-service.tls.certresolver=myresolver"
       - "traefik.http.routers.indexer-service.rule=Host(`$DOMAIN`)"
+
+  ipfs:
+    image: ipfs/kubo:${IPFS_VERSION}
+    container_name: indexer_ipfs
+    environment:
+      IPFS_PROFILE: server
+    networks:
+      subquery_indexer:
+        ipv4_address: ${DOCKER_SUBNET_PREFIX}.16
+    volumes:
+      - .data/ipfs/export:/export
+      - .data/ipfs/data:/data/ipfs
+      - .data/./ipfs/ipfs.sh:/container-init.d/ipfs.sh
+    ports:
+      - 4001:4001
+      - 4001:4001/udp
+      - 127.0.0.1:5001:5001
+      - 127.0.0.1:8080:8080

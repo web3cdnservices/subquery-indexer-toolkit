@@ -6,5 +6,7 @@
 .data/prometheus/*.yml
 .data/prometheus/prometheus.conf.d/*.yml
 .data/prometheus/prometheus.conf.d/subquery_deployment_metrics/*.yml
+.data/ipfs
+.data/.ipfs
 .env
 SubqueryIndexerHandbook.tar.gz
