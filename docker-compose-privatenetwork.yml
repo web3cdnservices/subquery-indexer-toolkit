@@ -42,3 +42,13 @@ services:
     restart: unless-stopped
 
 
+  pushgateway:
+    image: prom/pushgateway
+    container_name: pushgateway
+    restart: unless-stopped
+    expose:
+      - 9091
+    networks:
+      subquery_indexer:
+        ipv4_address: ${DOCKER_SUBNET_PREFIX}.14
+    logging: *default-logging

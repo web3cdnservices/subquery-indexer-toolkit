@@ -20,7 +20,7 @@ services:
 
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:${PROMETHEUS_VERSION}
     container_name: indexer_prometheus
     volumes:
       - prometheus_data:/prometheus
@@ -57,7 +57,7 @@ services:
     restart: always
 
   grafana:
-    image: grafana/grafana:10.0.3
+    image: grafana/grafana:${GRAFANA_VERSION}
     container_name: indexer_grafana
     networks:
       subquery_indexer:

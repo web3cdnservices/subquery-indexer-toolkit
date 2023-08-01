@@ -36,7 +36,7 @@ services:
       retries: 5
 
   coordinator:
-    image: subquerynetwork/indexer-coordinator:v1.3.2
+    image: subquerynetwork/indexer-coordinator:${COORDINATOR_VERSION}
     container_name: indexer_coordinator
     restart: always
     networks:
@@ -93,14 +93,14 @@ services:
         test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
 
   proxy:
-    image: subquerynetwork/indexer-proxy:v1.2.1
+    image: subquerynetwork/indexer-proxy:${PROXY_VERSION}
     container_name: indexer_proxy
     restart: always
     networks:
       subquery_indexer:
         ipv4_address: ${DOCKER_SUBNET_PREFIX}.5
     expose:
-      - 8375
+      - ${INDEXER_PROXY_PORT:-8375}
     ports:
       - 7370:7370/udp
     logging: *default-logging
@@ -109,7 +109,7 @@ services:
         condition: service_healthy
     command:
       - --host=0.0.0.0
-      - --port=8375
+      - --port=${INDEXER_PROXY_PORT:-8375}
       - --auth
       - --network=kepler
       - --jwt-secret=${JWT_SECRET_TOKEN}
@@ -126,62 +126,7 @@ services:
       retries: 5
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.indexer-service.loadbalancer.server.port=8375"
+      - "traefik.http.services.indexer-service.loadbalancer.server.port=${INDEXER_PROXY_PORT:-8375}"
       - "traefik.http.routers.indexer-service.entrypoints=websecure"
       - "traefik.http.routers.indexer-service.tls.certresolver=myresolver"
       - "traefik.http.routers.indexer-service.rule=Host(`$DOMAIN`)"
-
-  traefik:
-    image: traefik:latest
-    container_name: traefik
-    restart: always
-    networks:
-      subquery_indexer:
-        ipv4_address: ${DOCKER_SUBNET_PREFIX}.6
-    expose:
-      - "8082"
-    ports:
-      - "443:443"
-      - "80:80"
-    command:
-      - "--api=true"
-      - "--api.insecure=true"
-      - "--api.dashboard=true"
-      - "--metrics"
-      - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
-#      - "--log.level=DEBUG"
-      - "--entrypoints.http.address=:80"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.file.filename=/dynamic_config.yml"
-      - "--entrypoints.websecure.address=:443"
-      - "--entryPoints.metrics.address=:8082"
-      - "--metrics.prometheus.entryPoint=metrics"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.caserver=https://acme-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.myresolver.acme.email=${CERT_RESOLVER}"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-    volumes:
-      - "./.data/traefik/letsencrypt:/letsencrypt"
-      - "./.data/traefik/config/dynamic_config.yml:/dynamic_config.yml"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    labels:
-      - "traefik.enable=true"
-      - traefik.http.routers.traefik.rule=Host(`${DOMAIN}`)
-      - traefik.http.routers.traefik.entrypoints=https
-      - traefik.http.routers.traefik.service=api@internal
-      - traefik.http.routers.traefik.tls=true
-      - traefik.http.routers.traefik.tls.certresolver=myresolver
-
-  whoami:
-    image: containous/whoami
-    container_name: whoami
-    networks:
-      subquery_indexer:
-        ipv4_address: ${DOCKER_SUBNET_PREFIX}.7
-    labels:
-      - traefik.http.routers.https.rule=Host(`${DOMAIN}`)
-      - traefik.http.routers.https.entrypoints=https
-      - traefik.http.routers.https.tls=true

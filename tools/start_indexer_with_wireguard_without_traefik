@@ -57,7 +57,7 @@ sed -i  "s|password: ".*"|password: \"$DB_PASS\"|" $ROOT_PATH/../.data/grafana/d
 #docker network create subquery_indexer
 docker-compose -f $ROOT_PATH/../docker-compose-network.yml up -d
 
-docker-compose -f $ROOT_PATH/../docker-compose_traefik.yml -f $ROOT_PATH/../docker-compose-indexer.yml -f $ROOT_PATH/../docker-compose-monitoring.yml -f $ROOT_PATH/../docker-compose-privatenetwork.yml   up -d
+docker-compose  -f $ROOT_PATH/../docker-compose-indexer.yml -f $ROOT_PATH/../docker-compose-monitoring.yml -f $ROOT_PATH/../docker-compose-privatenetwork.yml   up -d
 
 
 echo -e "\033[0;33m ✈ Subquery indexer fully started  \033[0m\n"
