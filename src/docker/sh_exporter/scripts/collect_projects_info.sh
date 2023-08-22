@@ -31,6 +31,7 @@ let  textStatusToInt=(name)=>{
       "lastProcessedHeight": project.metadata.lastProcessedHeight,
       "targetHeight": project.metadata.targetHeight,
       "syncLag": parseInt(project.metadata.targetHeight) - parseInt(project.metadata.lastProcessedHeight),
+      "lastProcessedTimestampDiff": (parseInt(new Date().valueOf())-parseInt(project.metadata.lastProcessedTimestamp)),
       "lastProcessedTimestamp": project.metadata.lastProcessedTimestamp,
       "processingTimeLag": (Date.now()-parseInt(project.metadata.lastProcessedTimestamp)) / 1000,
       "indexerHealthy": (project.metadata.indexerHealthy) ? 1 : 0,
