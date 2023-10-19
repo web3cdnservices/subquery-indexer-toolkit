@@ -9,7 +9,7 @@ INDEXER_ADDR_NOPREFIX=`echo $INDEXER_ADDR | cut -c 3-45`
 generate_result_container()
 {
   cat <<EOF
-[{"labels": {"env":"indexer-summary"}, "results": {"self_stake": ${SELF_STAKED_BALANCE}, "total_stake": ${INDEXER_TOTAL_STAKE},"total_deployments":$INDEXER_TOTAL_DEPLOYMENTS,"count_active_paygs": ${COUNT_INEXER_ACTIVE_PAYGS} } }]
+[{"labels": {"env":"indexer-summary"}, "results": {"self_stake": ${SELF_STAKED_BALANCE}, "total_stake": ${INDEXER_TOTAL_STAKE},"total_deployments":$INDEXER_TOTAL_DEPLOYMENTS,"count_active_paygs": ${COUNT_INDEXER_ACTIVE_PAYGS} } }]
 EOF
 }
 
@@ -28,7 +28,8 @@ INDEXER_TOTAL_DEPLOYMENTS=$(hex_to_decimal $(call_contract_method  "eth_call" "0
 
 USER_ACTIVE_PAYGS=$(curl -s "${INTERNAL_COORDINATOR_URL}graphql" -H 'content-type: application/json' --data-raw '{"operationName":"UsersQuery","variables":{},"query":"query UsersQuery {\n  getAlivePaygs {\n    id\n    overflow\n    threshold\n    expiration\n  }\n}\n"}' )
 
-COUNT_INEXER_ACTIVE_PAYGS=$(echo $USER_ACTIVE_PAYGS |  jq ".data.getAlivePaygs | length")
+COUNT_INDEXER_ACTIVE_PAYGS=$(echo $USER_ACTIVE_PAYGS | jq '[.data.getAlivePaygs[] | select(.expiration > 0)] | length')
+
 
 
 echo "$(generate_result_container)"
