@@ -52,7 +52,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     command:
       - --network=kepler
-      - --postgres-host=postgres
+      - --postgres-host=indexer_db
       - --ws-endpoint=${PRIMARY_BLOCKCHAIN_RPC}
       - --postgres-password=${DB_PASS}
       - --postgres-port=5432
