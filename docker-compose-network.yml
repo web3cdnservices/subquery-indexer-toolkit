@@ -8,6 +8,8 @@ x-logging:
   driver: local
 
 networks:
+  indexer_services:
+    name: indexer_services
   subquery_indexer:
     name: subquery_indexer
     external: false
