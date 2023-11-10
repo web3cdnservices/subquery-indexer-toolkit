@@ -8,6 +8,8 @@ x-logging:
   driver: local
 
 networks:
+  indexer_services:
+    name: indexer_services
   subquery_indexer:
     name: subquery_indexer
     external: true
@@ -21,6 +23,7 @@ services:
     container_name: traefik
     restart: always
     networks:
+      indexer_services:
       subquery_indexer:
         ipv4_address: ${DOCKER_SUBNET_PREFIX}.6
     expose:
