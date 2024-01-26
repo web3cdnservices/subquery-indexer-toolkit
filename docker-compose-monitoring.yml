@@ -91,6 +91,7 @@ services:
       - '-labels=env,displayName,deploymentId'
     volumes:
       - ./src/docker/sh_exporter/scripts:/scripts
+      - ./.env:/scripts/.env
     networks:
       subquery_indexer:
         ipv4_address: ${DOCKER_SUBNET_PREFIX}.12
