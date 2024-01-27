@@ -2,7 +2,8 @@
 ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
 source $ROOT_PATH/lib/evm_methods
 source $ROOT_PATH/lib/vars
-#echo $ROOT_PATH
+source $ROOT_PATH/.env
+
 INDEXER_ADDR=`bash ${ROOT_PATH}/lib/get_indexer_address_from_proxy_endpoint.sh`
 INDEXER_ADDR_NOPREFIX=`echo $INDEXER_ADDR | cut -c 3-45`
 

@@ -1,4 +1,7 @@
-RPC="https://polygon.llamarpc.com"
+ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
+source $ROOT_PATH/../.env
+
+
 generate_payload()
 {
   cat <<EOF
@@ -16,14 +19,14 @@ EOF
 
 call_contract_method()
 {
-  RESULT=$(curl -H 'content-type: application/json' -s $RPC --data-raw "$(generate_contract_payload $1 $2 $3)" | jq -r ".result")
+  RESULT=$(curl -H 'content-type: application/json' -s $PRIMARY_BLOCKCHAIN_RPC --data-raw "$(generate_contract_payload $1 $2 $3)" | jq -r ".result")
   echo  $RESULT
 }
 
 
 call_method()
 {
-  RESULT=$(curl -H 'content-type: application/json' -s $RPC --data-raw "$(generate_payload $1 $2 $3)" | jq -r ".result")
+  RESULT=$(curl -H 'content-type: application/json' -s $PRIMARY_BLOCKCHAIN_RPC --data-raw "$(generate_payload $1 $2 $3)" | jq -r ".result")
   echo  $RESULT
 }
 

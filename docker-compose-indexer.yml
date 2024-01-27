@@ -18,7 +18,7 @@ services:
 
 
   postgres:
-    image: postgres:12-alpine
+    image: ${POSTGRES_VERSION:-postgres:12-alpine}
     container_name: indexer_db
     restart: always
     networks:
@@ -47,7 +47,9 @@ services:
       subquery_indexer:
         ipv4_address: ${DOCKER_SUBNET_PREFIX}.3
     expose:
-      - 8000
+      - ${COORDINATOR_PORT:-8000}
+    ports:
+      - 127.0.0.1:${COORDINATOR_PORT:-8000}: ${COORDINATOR_PORT:-8000}/tcp
     depends_on:
       "postgres":
         condition: service_healthy
@@ -55,17 +57,19 @@ services:
       - .data/subquery/.projects:/usr/projects
       - /var/run/docker.sock:/var/run/docker.sock
     command:
-      - --network=kepler
+      - --network=${NETWORK_NAME:-kepler}
       - --postgres-host=indexer_db
       - --ws-endpoint=${PRIMARY_BLOCKCHAIN_RPC}
       - --postgres-password=${DB_PASS}
       - --postgres-port=5432
-      - --port=8000
+      - --port=${COORDINATOR_PORT:-8000}
       - --start-port=3100
       - --secret-key=${SECRET_KEY}
-      - --mmrPath=/home
+      - --mmrPath=${MMR_PATH:-/home}
       - --ipfs=http://indexer_ipfs:8080/api/v0/
 #      - --debug=true
+    environment:
+      - COORDINATOR_PORT=${COORDINATOR_PORT:-8000}
     logging: *default-logging
     healthcheck:
       test:
@@ -74,7 +78,7 @@ services:
           "curl",
           "-i",
           "-X POST",
-          "http://indexer_coordinator:8000/graphql",
+          "http://indexer_coordinator:$$COORDINATOR_PORT/graphql",
           "-H 'Content-Type: application/json'",
           "-d '{ \"query\": \"query { accountMetadata { network } }\" }'"
         ]
@@ -114,20 +118,22 @@ services:
     depends_on:
       "coordinator":
         condition: service_healthy
+    environment:
+      - INDEXER_PROXY_PORT=${INDEXER_PROXY_PORT:-8375}
     command:
       - --host=0.0.0.0
       - --port=${INDEXER_PROXY_PORT:-8375}
       - --auth
-      - --network=kepler
+      - --network=${NETWORK_NAME:-kepler}
       - --jwt-secret=${JWT_SECRET_TOKEN}
       - --secret-key=${SECRET_KEY}
-      - --service-url=http://indexer_coordinator:8000
+      - --service-url=http://indexer_coordinator:${COORDINATOR_PORT:-8000}
       - --network-endpoint=${PRIMARY_BLOCKCHAIN_RPC}
       - --token-duration=24
       - --redis-endpoint=redis://indexer_cache
       - --metrics-token=${PROMETHEUS_METRICS_TOKEN}
     healthcheck:
-      test: ["CMD-SHELL", "curl http://indexer_proxy:8375/healthy >/dev/null 2>&1 || exit 1"]
+      test: ["CMD-SHELL", "curl http://indexer_proxy:$$INDEXER_PROXY_PORT/healthy >/dev/null 2>&1 || exit 1"]
       interval: 30s
       timeout: 30s
       retries: 5
