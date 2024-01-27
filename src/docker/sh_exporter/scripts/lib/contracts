@@ -1,0 +1,8 @@
+#!/bin/bash
+ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
+
+source $ROOT_PATH/../.env
+
+export INDEXER_REGISTRY_CONTRACT="0xf1485b4cfa7f4cd75f0b1395240f15b81a757cbb"
+export INDEXER_STAKING_MANAGER="0x379190a8638d2234533eb6fa4575012fd21eaea5"
+export INDEXER_QUERY_REGISTRY="0x7d77597ff06795eb1fa796f8e959ed3184e34299"
