@@ -1,4 +1,4 @@
-# Postgres upgrade from v11 to v16
+# Postgres upgrade from v12 to v16
 
 ## Kepler testnet was use 12v of postgresql but on mainnet we are migration to v16. So for continue and migrate to mainnet indexer musr convert their databases to actual version.
 
