@@ -11,3 +11,4 @@
 .data/.ipfs
 .env
 SubqueryIndexerHandbook.tar.gz
+.PACKAGE_USE_OVERRIDE
