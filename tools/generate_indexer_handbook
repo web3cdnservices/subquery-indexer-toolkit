@@ -7,6 +7,7 @@ WG_CONFIG_PATH=`realpath $ROOT_PATH/../.data/wireguard/config`
 set -a
 source $ROOT_PATH/../.env
 source $ROOT_PATH/../.PACKAGE_USE
+source $ROOT_PATH/../.PACKAGE_USE_OVERRIDE
 set -a
 
 

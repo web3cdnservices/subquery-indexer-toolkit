@@ -7,10 +7,10 @@ x-logging:
     compress: 'false'
   driver: local
 
-#networks:
-#  subquery_indexer:
-#    name: subquery_indexer
-#    external: true
+networks:
+  subquery_indexer:
+    name: subquery_indexer
+    external: true
 
 
 services:
@@ -18,9 +18,9 @@ services:
     image: haproxytech/haproxy-alpine:2.9
     container_name: haproxy_network_polygon
     restart: always
-    # networks:
-    #   subquery_indexer:
-    #     ipv4_address: ${DOCKER_SUBNET_PREFIX}.6
+    networks:
+      subquery_indexer:
+        ipv4_address: ${DOCKER_SUBNET_PREFIX}.15
     entrypoint: "haproxy  -f /etc/haproxy/haproxy.cfg -f /etc/haproxy/config.d"
     expose:
       - "8385"

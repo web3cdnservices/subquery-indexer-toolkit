@@ -2,6 +2,7 @@
 
 set -a
 source .PACKAGE_USE
+source .PACKAGE_USE_OVERRIDE
 
 INDEXER_COORDINATOR_RESULT=`curl  -s --compressed  'https://hub.docker.com/v2/repositories/subquerynetwork/indexer-coordinator/tags/?page_size=25&page=1&name&ordering' -H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0' -H 'Accept: application/json' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'X-DOCKER-API-CLIENT: docker-hub/v3168.0.0' -H 'Connection: keep-alive' -H 'Referer: https://hub.docker.com/r/subquerynetwork/indexer-coordinator/tags'`
 LATEST_COORDINATOR_VERSION=`echo $INDEXER_COORDINATOR_RESULT | jq ".results[0].name"`

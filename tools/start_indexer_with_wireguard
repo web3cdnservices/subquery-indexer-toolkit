@@ -15,6 +15,7 @@ fi
 set -a
 source $ROOT_PATH/../.env
 source $ROOT_PATH/../.PACKAGE_USE
+source $ROOT_PATH/../.PACKAGE_USE_OVERRIDE
 set -a
 
 echo -e "\033[0;33m ♨ Start & Update  Subquery indexer  \033[0m\n"
