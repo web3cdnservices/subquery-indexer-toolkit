@@ -1,0 +1,24 @@
+#!/bin/bash
+
+generate_result_container()
+{
+  cat <<EOF
+{"variables":{},"query":"{\n  getProjects {\n    id\n    status\n    chainType\n    nodeEndpoint\n    queryEndpoint\n    details {\n      name\n      owner\n      image\n      description\n      websiteUrl\n      codeUrl\n      version\n      createdTimestamp\n      updatedTimestamp\n      __typename\n    }\n    baseConfig {\n      networkEndpoints\n      networkDictionary\n      nodeVersion\n      queryVersion\n      __typename\n    }\n    advancedConfig {\n      poiEnabled\n      purgeDB\n      purgeDB\n      timeout\n      worker\n      batchSize\n      cache\n      cpu\n      memory\n      __typename\n    }\n    metadata {\n      lastProcessedHeight\n      lastProcessedTimestamp\n      targetHeight\n      chain\n      specName\n      genesisHash\n      indexerHealthy\n      indexerNodeVersion\n      queryNodeVersion\n      indexerStatus\n      queryStatus\n      startHeight\n      __typename\n    }\n    payg {\n      id\n      threshold\n      expiration\n      price\n      token\n      __typename\n    }\n    __typename\n  }\n}"}
+EOF
+}
+
+COORDINATOR_IP=`docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' indexer_coordinator`
+
+
+data=`curl -s http://${COORDINATOR_IP}:8000/graphql  -X POST -H 'content-type: application/json'  --data-raw "$(generate_result_container)"`
+
+stop_project () {
+  echo "Stopping project $1"
+  curl -s http://${COORDINATOR_IP}:8000/graphql -X POST -H 'content-type: application/json' --data-raw "{\"operationName\":\"StopProject\",\"variables\":{\"id\":$1},\"query\":\"mutation StopProject(\$id: String!) {\n  stopProject(id: \$id) {\n    id\n    status\n    chainType\n    nodeEndpoint\n    queryEndpoint\n    details {\n      name\n      owner\n      image\n      description\n      websiteUrl\n      codeUrl\n      version\n      createdTimestamp\n      updatedTimestamp\n      __typename\n    }\n    baseConfig {\n      networkEndpoints\n      networkDictionary\n      nodeVersion\n      queryVersion\n      __typename\n    }\n    advancedConfig {\n      poiEnabled\n      purgeDB\n      purgeDB\n      timeout\n      worker\n      batchSize\n      cache\n      cpu\n      memory\n      __typename\n    }\n    __typename\n  }\n}\"}"
+
+}
+
+readarray -t conversations < <(echo $data | jq -c ".data.getProjects | map(.id) | .[]")
+for conversation in "${conversations[@]}"; do
+   stop_project "$conversation"
+done
