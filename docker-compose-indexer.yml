@@ -10,6 +10,7 @@ x-logging:
 networks:
   indexer_services:
     name: indexer_services
+    external: true
   subquery_indexer:
     name: subquery_indexer
     external: true
@@ -57,7 +58,7 @@ services:
       - .data/subquery/.projects:/usr/projects
       - /var/run/docker.sock:/var/run/docker.sock
     command:
-      - --network=${NETWORK_NAME:-kepler}
+      - --network=${NETWORK_NAME:-mainnet}
       - --postgres-host=indexer_db
       - --ws-endpoint=${PRIMARY_BLOCKCHAIN_RPC}
       - --postgres-schema=${POSTGRES_SCHEMA:-coordinator_db}
@@ -79,7 +80,7 @@ services:
           "curl",
           "-i",
           "-X POST",
-          "http://indexer_coordinator:$$COORDINATOR_PORT/graphql",
+          "http://indexer_coordinator:${COORDINATOR_PORT:-8000}/graphql",
           "-H 'Content-Type: application/json'",
           "-d '{ \"query\": \"query { accountMetadata { network } }\" }'"
         ]
@@ -88,12 +89,12 @@ services:
       retries: 5
     labels:
       - "traefik.enable=${ENABLE_COORDINATOR_EXTERNAL:-false}"
-      - "traefik.http.services.indexer-service.loadbalancer.server.port=${COORDINATOR_PORT:-8000}"
-      - "traefik.http.routers.indexer-service.entrypoints=websecure"
-      - "traefik.http.routers.indexer-service.tls.certresolver=myresolver"
-#      - "traefik.http.routers.indexer-service.rule=Host(`$DOMAIN`) && Pathprefix(`/coordinator`)"
-      - "traefik.http.middlewares.inner-auth.basicauth.users=${REALM_AUTH_DATA}/"
-      - "traefik.http.routers.indexer-service.rule=Host(`$DOMAIN_COORDINATOR`)"
+      - "traefik.http.services.indexer-cord.loadbalancer.server.port=8000"
+      - "traefik.http.routers.indexer-cord.entrypoints=websecure"
+      - "traefik.http.routers.indexer-cord.tls.certresolver=myresolver"
+      - "traefik.http.middlewares.myauth.basicauth.users=${REALM_AUTH_DATA}"
+      - "traefik.http.routers.indexer-cord.rule=Host(`$DOMAIN_COORDINATOR`)"
+      - "traefik.http.routers.indexer-cord.middlewares=myauth"
 
   redis:
       image: redis:${REDIS_VERSION:-7-alpine}
@@ -142,7 +143,7 @@ services:
       - --redis-endpoint=redis://indexer_cache
       - --metrics-token=${PROMETHEUS_METRICS_TOKEN}
     healthcheck:
-      test: ["CMD-SHELL", "curl http://indexer_proxy:$$INDEXER_PROXY_PORT/healthy >/dev/null 2>&1 || exit 1"]
+      test: ["CMD-SHELL", "curl http://indexer_proxy:${INDEXER_PROXY_PORT:-8375}/healthy >/dev/null 2>&1 || exit 1"]
       interval: 30s
       timeout: 30s
       retries: 5

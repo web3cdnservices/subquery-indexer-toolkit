@@ -48,7 +48,8 @@ do
 done
 
 
-REALM_AUTH_DATA_STRING=$(docker run --rm -i xmartlabs/htpasswd "$input_login" "$input_password" | sed -e s/\\$/\\$\\$/gi )
+REALM_AUTH_DATA_STRING=$(docker run --rm -i xmartlabs/htpasswd "$input_login" "$input_password" )
+#REALM_AUTH_DATA_STRING=$(docker run --rm -i xmartlabs/htpasswd "$input_login" "$input_password" | sed -e s/\\$/\\$\\$/gi )
 
 #if [ "$REALM_AUTH_DATA" != "" ]; then
 #  sed -i "s/REALM_AUTH_DATA=.*/REALM_AUTH_DATA='$(echo "${REALM_AUTH_DATA_STRING@Q}")'/" "$ROOT_PATH"/../.env
@@ -56,7 +57,7 @@ REALM_AUTH_DATA_STRING=$(docker run --rm -i xmartlabs/htpasswd "$input_login" "$
 #
 #fi
 
-echo "REALM_AUTH_DATA=\"$REALM_AUTH_DATA_STRING\"" >> "$ROOT_PATH"/../.env
+echo "REALM_AUTH_DATA='$REALM_AUTH_DATA_STRING'" >> "$ROOT_PATH"/../.env
 
 sed -i 's/ENABLE_COORDINATOR_EXTERNAL=.*/ENABLE_COORDINATOR_EXTERNAL=true/' "$ROOT_PATH"/../.env
 
