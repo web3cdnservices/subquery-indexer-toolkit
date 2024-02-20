@@ -2,6 +2,8 @@
 ## Who can use it?
 `Anyone. Migration script support Original Subquery Composer scripts and Toolkit.` 
 
+`PS. for long-live processes please always use tmux or screen. (tmux new)`
+
 ## # Setup software & prepare env.
 `Run command from root.`
 ```
