@@ -1,4 +1,4 @@
 #!/bin/bash
 # Stop all containers by mask node_, query_ (per project)
-docker container restart $(docker container ls --all -q --filter name=node)
-docker container restart $(docker container ls --all -q --filter name=query)
+docker container stop $(docker container ls --all -q --filter name=node)
+docker container stop $(docker container ls --all -q --filter name=query)

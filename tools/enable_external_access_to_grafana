@@ -1,0 +1,28 @@
+#!/bin/bash
+ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
+domain_expression="^([a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\.)+[a-zA-Z]{2,}$"
+
+source "$ROOT_PATH"/../.env;
+
+echo -e "\033[0;31m ♨ Enabling access to services without VPN  \033[0m\n"
+
+read -p '✍ Enter Grafana domain: ' input_domain
+
+while [ "$input_domain" == "" ] || ! [[ "$input_domain" =~ $domain_expression ]]
+do
+  echo -e "\033[0;31m  ✘ Incorrect domain name. Please check twice and send again. \033[0m \n"
+  read -p '✍ Enter Grafana domain: ' input_domain
+done
+
+
+if [ "$ENABLE_GRAFANA_EXTERNAL" ]; then
+  sed -i 's/ENABLE_GRAFANA_EXTERNAL=.*/ENABLE_GRAFANA_EXTERNAL=true/' "$ROOT_PATH"/../.env
+else
+  echo "ENABLE_GRAFANA_EXTERNAL=true" >> "$ROOT_PATH"/../.env
+fi
+
+
+sed -i "s|DOMAIN_GRAFANA=".*"|DOMAIN_GRAFANA=\"$input_domain\"|" "$ROOT_PATH"/../.env
+
+
+echo -e "\033[0;33m ✈ Ready. Check your grafana here: https://$input_domain  \033[0m\n"

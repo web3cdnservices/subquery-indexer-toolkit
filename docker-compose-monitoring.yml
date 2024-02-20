@@ -78,8 +78,9 @@ services:
       - "traefik.http.services.indexer-service.loadbalancer.server.port=3000"
       - "traefik.http.routers.indexer-service.entrypoints=websecure"
       - "traefik.http.routers.indexer-service.tls.certresolver=myresolver"
-      - "traefik.http.routers.indexer-service.rule=Host(`$DOMAIN`) && Pathprefix(`/grafana`)"
-      - "traefik.http.middlewares.inner-auth.basicauth.users=${REALM_AUTH_DATA}/"
+#      - "traefik.http.routers.indexer-service.rule=Host(`$DOMAIN`) && Pathprefix(`/grafana`)"
+#      - "traefik.http.middlewares.inner-auth.basicauth.users=${REALM_AUTH_DATA}/"
+      - "traefik.http.routers.indexer-service.rule=Host(`$DOMAIN_GRAFANA`)"
 
   prometheus_graphql_exporter:
     image: ricardbejarano/graphql_exporter:latest

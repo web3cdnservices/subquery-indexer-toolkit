@@ -60,7 +60,7 @@ services:
       - --network=${NETWORK_NAME:-kepler}
       - --postgres-host=indexer_db
       - --ws-endpoint=${PRIMARY_BLOCKCHAIN_RPC}
-      - --postgres-schema=${POSTGRES_SCHENA:-coordinator_db}
+      - --postgres-schema=${POSTGRES_SCHEMA:-coordinator_db}
       - --postgres-password=${DB_PASS}
       - --postgres-port=5432
       - --port=${COORDINATOR_PORT:-8000}
@@ -86,9 +86,17 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    labels:
+      - "traefik.enable=${ENABLE_COORDINATOR_EXTERNAL:-false}"
+      - "traefik.http.services.indexer-service.loadbalancer.server.port=${COORDINATOR_PORT:-8000}"
+      - "traefik.http.routers.indexer-service.entrypoints=websecure"
+      - "traefik.http.routers.indexer-service.tls.certresolver=myresolver"
+#      - "traefik.http.routers.indexer-service.rule=Host(`$DOMAIN`) && Pathprefix(`/coordinator`)"
+      - "traefik.http.middlewares.inner-auth.basicauth.users=${REALM_AUTH_DATA}/"
+      - "traefik.http.routers.indexer-service.rule=Host(`$DOMAIN_COORDINATOR`)"
 
   redis:
-      image: redis:7-alpine
+      image: redis:${REDIS_VERSION:-7-alpine}
       container_name: indexer_cache
       restart: always
       networks:

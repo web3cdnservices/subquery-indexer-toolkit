@@ -1,0 +1,102 @@
+#!/bin/bash
+PREV_ROOT_PATH=`docker container inspect indexer_coordinator --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}'`
+IS_TOOLKIT=false
+MAINNET_TOOLKIT_PATH="/usr/src/subquery-indexer-toolkit-mainnet"
+pkgs=(git tmux)
+missing_pkgs=""
+
+installed() {
+    return $(dpkg-query -W -f '${Status}\n' "${1}" 2>&1|awk '/ok installed/{print 0;exit}{print 1}')
+}
+
+if [ "$(id -u)" -ne 0 ]; then echo -e "\033[0;31m       ✘ Please run from root. \033[0m \n" >&2; exit 1; fi
+
+
+for pkg in ${pkgs[@]}; do
+    if ! $(installed $pkg) ; then
+        missing_pkgs+=" $pkg"
+    fi
+done
+
+if [ ! -z "$missing_pkgs" ]; then
+    sudo apt install -y $missing_pkgs
+fi
+
+#if [ "$TERM_PROGRAM" != tmux ]; then
+
+#fi
+
+
+echo -e "\033[0;33m  Hello, I'm kepler -> Subquery migration tool.  \033[0m\n"
+
+read -p '✍ Start migration? type "y" if yes: ' input_login
+
+while [ "$input_login" != "y" ]
+do
+  echo -e "\033[0;31m  ✘ Incorrect response. use Ctrl+c for cancel. \033[0m \n"
+  read -p '✍ Start migration? type "y" if yes: ' input_login
+done
+
+if [ -z "$PREV_ROOT_PATH" ]; then
+echo -e "\033[0;31m       ✘ Cannot locate Subquery indexer on this server! Please check if is indexer run. \033[0m \n"
+  exit
+fi
+
+echo -e "\033[0;33m       Subquery indexer detected. your Kepler instance located on: ${PREV_ROOT_PATH}.  \033[0m\n"
+
+if [ -d "$PREV_ROOT_PATH"/src/docker/sh_exporter ]; then
+  echo -e "\033[0;33m        ^=^r^= Detected Subquery Toolkit.  \033[0m\n"
+  IS_TOOLKIT=true
+else
+  echo -e "\033[0;33m        Detected Official Subquery docker-compose.yml.  \033[0m\n"
+fi
+
+if [ ! -d "$PREV_ROOT_PATH"/.data/postgres/ ]; then
+echo -e "\033[0;31m       ✘ Cannot locate Subquery Postgres folder in default location (.data/postgres). \033[0m \n"
+  exit
+fi
+
+POSTGRES_VERSION=`cat "$PREV_ROOT_PATH"/.data/postgres/PG_VERSION`
+
+echo -e "\033[0;33m        Detected Postgres version $POSTGRES_VERSION.  \033[0m\n"
+
+
+echo -e "\033[0;33m        Stopping all Subquery containers and preparing for migration  \033[0m\n"
+
+if [ "$IS_TOOLKIT" = true ] ;then
+   "$ROOT_PATH"/../tools/tool_destroy_projects_containers
+   echo -e "\033[0;33m        ^p Projects containers stopped & removed  \033[0m\n"
+
+   docker container rm -f  $(docker container ls --all -q --filter name=node)
+   docker container rm -f $(docker container ls --all -q --filter name=query)
+
+   "$ROOT_PATH"/../tools/stop_all
+
+else
+   docker-compose -f "$PREV_ROOT_PATH"/docker-compose.yml down
+   docker container rm -f  $(docker container ls --all -q --filter name=node)
+   docker container rm -f $(docker container ls --all -q --filter name=query)
+fi
+
+
+
+git clone https://github.com/web3cdnservices/subquery-indexer-toolkit.git $MAINNET_TOOLKIT_PATH
+#tmux detach -E false; exit
+
+echo -e "\033[0;33m        Moving Database from  $PREV_ROOT_PATH/.data/postgres to $MAINNET_TOOLKIT_PATH/.data/postgres \033[0m\n"
+mv "$PREV_ROOT_PATH"/.data/postgres "$MAINNET_TOOLKIT_PATH"/.data/postgres
+
+"$MAINNET_TOOLKIT_PATH"/tools/generate_initial_configuration
+
+echo "POSTGRES_VERSION=\"postgres:$POSTGRES_VERSION-alpine\"" >> "$MAINNET_TOOLKIT_PATH"/.PACKAGE_USE_OVERRIDE
+
+echo -e "\033[0;33m \n\n What next?  \033[0m\n"
+
+echo -e "\033[0;33m  Open public access to coordinator? run: ./tools/enable_external_access_to_coordinator  \033[0m\n"
+echo -e "\033[0;33m  Open public access to grafana? run: ./tools/enable_external_access_to_grafana  \033[0m\n"
+
+echo -e "\033[0;33m  If your configuration ready, please run: ./tools/start_indexer_with_wireguard  \033[0m\n"
+
+
+
+
