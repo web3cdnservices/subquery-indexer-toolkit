@@ -22,7 +22,8 @@ else
 fi
 
 
-sed -i "s|DOMAIN_GRAFANA=".*"|DOMAIN_GRAFANA=\"$input_domain\"|" "$ROOT_PATH"/../.env
+echo "DOMAIN_GRAFANA=\"$input_domain\"" >> "$ROOT_PATH"/../.env
+#sed -i "s|DOMAIN_GRAFANA=".*"|DOMAIN_GRAFANA=\"$input_domain\"|" "$ROOT_PATH"/../.env
 
 
 echo -e "\033[0;33m ✈ Ready. Check your grafana here: https://$input_domain  \033[0m\n"

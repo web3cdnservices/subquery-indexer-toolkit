@@ -48,8 +48,8 @@ services:
         ipv4_address: ${DOCKER_SUBNET_PREFIX}.3
     expose:
       - ${COORDINATOR_PORT:-8000}
-    ports:
-      - 127.0.0.1:${COORDINATOR_PORT:-8000}: ${COORDINATOR_PORT:-8000}/tcp
+#    ports:
+#      - 127.0.0.1:${COORDINATOR_PORT:-8000}: ${COORDINATOR_PORT:-8000}/tcp
     depends_on:
       "postgres":
         condition: service_healthy
