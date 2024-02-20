@@ -58,17 +58,10 @@ REALM_AUTH_DATA_STRING=$(docker run --rm -i xmartlabs/htpasswd "$input_login" "$
 
 echo "REALM_AUTH_DATA=\"$REALM_AUTH_DATA_STRING\"" >> "$ROOT_PATH"/../.env
 
+sed -i 's/ENABLE_COORDINATOR_EXTERNAL=.*/ENABLE_COORDINATOR_EXTERNAL=true/' "$ROOT_PATH"/../.env
 
-
-
-if [  "$ENABLE_COORDINATOR_EXTERNAL"  ]; then
-  sed -i 's/ENABLE_COORDINATOR_EXTERNAL=.*/ENABLE_COORDINATOR_EXTERNAL=true/' "$ROOT_PATH"/../.env
-else
-  echo "ENABLE_COORDINATOR_EXTERNAL=true" >> "$ROOT_PATH"/../.env
-fi
-
-echo "DOMAIN_COORDINATOR=\"$input_domain\"" >> "$ROOT_PATH"/../.env
-#sed -i "s|DOMAIN_COORDINATOR=".*"|DOMAIN_COORDINATOR=\"$input_domain\"|" "$ROOT_PATH"/../.env
+#echo "DOMAIN_COORDINATOR=\"$input_domain\"" >> "$ROOT_PATH"/../.env
+sed -i "s|DOMAIN_COORDINATOR=".*"|DOMAIN_COORDINATOR=\"$input_domain\"|" "$ROOT_PATH"/../.env
 
 
 echo -e "\033[0;33m ✈ Ready. Check your Subquery Coordinator here: https://$input_domain with \n login: $input_login \n password: $input_password \n  \033[0m\n"

@@ -55,7 +55,7 @@ if [ ! -d "$PREV_ROOT_PATH"/.data/postgres/ ]; then
 echo -e "\033[0;31m       ✘ Cannot locate Subquery Postgres folder in default location (.data/postgres). \033[0m \n"
   exit
 fi
-
+OLD_POSTGRES_PASSWORD=`docker exec -i indexer_db printenv | grep -oP '(?<=POSTGRES_PASSWORD=).*'`
 POSTGRES_VERSION=`cat "$PREV_ROOT_PATH"/.data/postgres/PG_VERSION`
 
 echo -e "\033[0;33m        Detected Postgres version $POSTGRES_VERSION.  \033[0m\n"
@@ -87,6 +87,8 @@ echo -e "\033[0;33m        Moving Database from  $PREV_ROOT_PATH/.data/postgres 
 mv "$PREV_ROOT_PATH"/.data/postgres "$MAINNET_TOOLKIT_PATH"/.data/postgres
 
 "$MAINNET_TOOLKIT_PATH"/tools/generate_initial_configuration
+sed -i "s|DB_PASS=".*"|DB_PASS=\"$OLD_POSTGRES_PASSWORD\"|" "$MAINNET_TOOLKIT_PATH"/.env
+
 
 echo "POSTGRES_VERSION=\"postgres:$POSTGRES_VERSION-alpine\"" >> "$MAINNET_TOOLKIT_PATH"/.PACKAGE_USE_OVERRIDE
 
