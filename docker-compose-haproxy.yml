@@ -15,7 +15,7 @@ networks:
 
 services:
   haproxy_network_polygon:
-    image: haproxytech/haproxy-alpine:2.9
+    image: haproxytech/haproxy-alpine:${HAPROXY_VERSION:-2.9}
     container_name: haproxy_network_polygon
     restart: always
     networks:

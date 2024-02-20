@@ -62,6 +62,8 @@ services:
     networks:
       subquery_indexer:
         ipv4_address: ${DOCKER_SUBNET_PREFIX}.10
+#    ports:
+#      - ${GRAFANA_EXPOSE_ADDR:-127.0.0.1:3000}:3000
     expose:
       - 3000
     volumes:
@@ -71,6 +73,13 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
       - GF_INSTALL_PLUGINS=fifemon-graphql-datasource
+    labels:
+      - "traefik.enable=${ENABLE_GRAFANA_EXTERNAL:-false}"
+      - "traefik.http.services.indexer-service.loadbalancer.server.port=3000"
+      - "traefik.http.routers.indexer-service.entrypoints=websecure"
+      - "traefik.http.routers.indexer-service.tls.certresolver=myresolver"
+      - "traefik.http.routers.indexer-service.rule=Host(`$DOMAIN`) && Pathprefix(`/grafana`)"
+      - "traefik.http.middlewares.inner-auth.basicauth.users=${REALM_AUTH_DATA}/"
 
   prometheus_graphql_exporter:
     image: ricardbejarano/graphql_exporter:latest

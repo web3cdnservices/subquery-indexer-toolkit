@@ -60,6 +60,7 @@ services:
       - --network=${NETWORK_NAME:-kepler}
       - --postgres-host=indexer_db
       - --ws-endpoint=${PRIMARY_BLOCKCHAIN_RPC}
+      - --postgres-schema=${POSTGRES_SCHENA:-coordinator_db}
       - --postgres-password=${DB_PASS}
       - --postgres-port=5432
       - --port=${COORDINATOR_PORT:-8000}

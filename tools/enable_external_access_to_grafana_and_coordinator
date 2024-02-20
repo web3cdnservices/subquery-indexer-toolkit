@@ -1,0 +1,68 @@
+#!/bin/bash
+ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
+
+source "$ROOT_PATH"/../.env;
+
+echo -e "\033[0;31m ♨ Enabling access to services without VPN  \033[0m\n"
+
+if [  "$REALM_AUTH_DATA" != "" ]; then
+  echo -e "You already configured login and password for public access. "
+  read -p '✍ Print "yes" if you want generate new login*pass pair Or Ctrl+c for cancel.: ' request_geneeate_newpair
+
+  while [ "$request_geneeate_newpair" != "yes" ]
+  do
+    echo -e "\033[0;31m  ✘ Incorrect answer. \033[0m \n"
+    read -p '✍ Print "yes" if you want generate new login*pass pair Or Ctrl+c for cancel.: ' request_geneeate_newpair
+  done
+fi
+
+
+
+
+
+read -p '✍ Enter login for auth: ' input_login
+
+while [ "$input_login" == "" ]
+do
+  echo -e "\033[0;31m  ✘ Incorrect login. \033[0m \n"
+  read -p '✍ Enter login for auth: ' input_login
+done
+
+
+read -p '✍ Enter password for auth: ' input_password
+
+while [ "$input_password" == "" ]
+do
+  echo -e "\033[0;31m  ✘ Incorrect password. \033[0m \n"
+  read -p '✍ Enter password for auth: ' input_password
+done
+
+
+REALM_AUTH_DATA_STRING=$(docker run --rm -i xmartlabs/htpasswd "$input_login" "$input_password" | sed -e s/\\$/\\$\\$/gi )
+
+#if [ "$REALM_AUTH_DATA" != "" ]; then
+#  sed -i "s/REALM_AUTH_DATA=.*/REALM_AUTH_DATA='$(echo "${REALM_AUTH_DATA_STRING@Q}")'/" "$ROOT_PATH"/../.env
+#else
+#
+#fi
+
+echo "REALM_AUTH_DATA=\"$REALM_AUTH_DATA_STRING\"" >> "$ROOT_PATH"/../.env
+
+
+
+
+if [ "$ENABLE_GRAFANA_EXTERNAL" ]; then
+  sed -i 's/ENABLE_GRAFANA_EXTERNAL=.*/ENABLE_GRAFANA_EXTERNAL=true/' "$ROOT_PATH"/../.env
+else
+  echo "ENABLE_GRAFANA_EXTERNAL=true" >> "$ROOT_PATH"/../.env
+fi
+
+
+if [  "$ENABLE_COORDINATOR_EXTERNAL"  ]; then
+  sed -i 's/ENABLE_COORDINATOR_EXTERNAL=.*/ENABLE_COORDINATOR_EXTERNAL=true/' "$ROOT_PATH"/../.env
+else
+  echo "ENABLE_COORDINATOR_EXTERNAL=true" >> "$ROOT_PATH"/../.env
+fi
+
+
+echo -e "\033[0;33m ✈ Ready  \033[0m\n"
