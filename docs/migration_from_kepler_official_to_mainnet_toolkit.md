@@ -34,6 +34,7 @@ bash <(curl -s https://raw.githubusercontent.com/web3cdnservices/subquery-indexe
  - Detect old indexer configuration (location & database password)
  - Detect your postgres version
  - Stop old projects and old testnet indexer
+ - stop&disable nginx
  - Install Mainnet indexer
  - Generate configuration, certificates, and move database.
  - Start new full-featured indexer.
