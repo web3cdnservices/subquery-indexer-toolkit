@@ -67,6 +67,9 @@ done
 sed -i "s|Authorization: Bearer ".*"|Authorization: Bearer  $PROMETHEUS_METRICS_TOKEN|" $ROOT_PATH/../.data/grafana/datasources/prometheus.yml
 sed -i  "s|password: ".*"|password: \"$DB_PASS\"|" $ROOT_PATH/../.data/grafana/datasources/indexer_postgres.yml
 
+echo "" > /src/docker/sh_exporter/scripts/.env
+echo "PRIMARY_BLOCKCHAIN_RPC=\"$PRIMARY_BLOCKCHAIN_RPC\"" > /src/docker/sh_exporter/scripts/.env
+
 #docker network create subquery_indexer
 docker-compose -f $ROOT_PATH/../docker-compose-network.yml up -d
 
