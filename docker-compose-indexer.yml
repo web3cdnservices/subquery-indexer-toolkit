@@ -132,10 +132,10 @@ services:
     environment:
       - INDEXER_PROXY_PORT=${INDEXER_PROXY_PORT:-8375}
     command:
-      - --host=0.0.0.0
+#      - --host=0.0.0.0
       - --port=${INDEXER_PROXY_PORT:-8375}
       - --auth
-      - --network=${NETWORK_NAME:-kepler}
+      - --network=${NETWORK_NAME:-mainnet}
       - --jwt-secret=${JWT_SECRET_TOKEN}
       - --secret-key=${SECRET_KEY}
       - --service-url=http://indexer_coordinator:${COORDINATOR_PORT:-8000}
