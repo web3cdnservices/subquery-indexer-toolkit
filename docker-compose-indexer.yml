@@ -138,7 +138,7 @@ services:
       - --network=${NETWORK_NAME:-mainnet}
       - --jwt-secret=${JWT_SECRET_TOKEN}
       - --secret-key=${SECRET_KEY}
-      - --service-url=http://indexer_coordinator:${COORDINATOR_PORT:-8000}
+      - --coordinator-endpoint=http://indexer_coordinator:${COORDINATOR_PORT:-8000}
       - --network-endpoint=${PRIMARY_BLOCKCHAIN_RPC}
       - --token-duration=24
       - --redis-endpoint=redis://indexer_cache
