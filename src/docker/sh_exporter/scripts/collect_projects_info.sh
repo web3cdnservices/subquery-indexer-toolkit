@@ -16,7 +16,7 @@ let _=require('lodash');
   let project_list=await projects_list_query.json();
 
 
-let resultArr = project_list.data.getProjects.map((project)=>{
+let resultArr = project_list?.data?.getProjects.map((project)=>{
 
 let  textStatusToInt=(name)=>{
   if (name==='HEALTHY') return 100;
@@ -45,7 +45,7 @@ let  textStatusToInt=(name)=>{
   } }
 })
 
-  console.log(JSON.stringify(resultArr));
+  console.log(JSON.stringify(resultArr|| []));
   process.exit(0)
 
 })();

@@ -6,7 +6,7 @@ source $ROOT_PATH/.env
 
 source $ROOT_PATH/lib/contracts
 
-INTERNAL_COORDINATOR_URL="http://indexer_coordinator:8000/"
+INTERNAL_COORDINATOR_URL="http://indexer_coordinator:${COORDINATOR_PORT:-8000}/"
 
 INDEXER_ADDR=`bash $ROOT_PATH/lib/get_indexer_address_from_proxy_endpoint.sh`
 INDEXER_ADDR_NOPREFIX=`echo $INDEXER_ADDR | cut -c 3-45`
@@ -14,7 +14,7 @@ INDEXER_ADDR_NOPREFIX=`echo $INDEXER_ADDR | cut -c 3-45`
 generate_result_container()
 {
   cat <<EOF
-[{"labels": {"env":"indexer-summary"}, "results": {"self_stake": ${SELF_STAKED_BALANCE}, "total_stake": ${INDEXER_TOTAL_STAKE},"total_deployments":$INDEXER_TOTAL_DEPLOYMENTS,"count_active_paygs": ${COUNT_INEXER_ACTIVE_PAYGS} } }]
+[{"labels": {"env":"indexer-summary"}, "results": {"self_stake": ${SELF_STAKED_BALANCE:-0}, "total_stake": ${INDEXER_TOTAL_STAKE:-0},"total_deployments":${INDEXER_TOTAL_DEPLOYMENTS:-0},"count_active_paygs": ${COUNT_INEXER_ACTIVE_PAYGS:-0} } }]
 EOF
 }
 
@@ -26,7 +26,7 @@ INDEXER_OPERATOR_ADDR_NOPREFIX=`echo $INDEXER_OPERATOR | cut -c 3-45`
 SELF_STAKED_BALANCE=$(hex_to_decimal $(call_contract_method  "eth_call" "0x1c503039000000000000000000000000${INDEXER_ADDR_NOPREFIX}000000000000000000000000${INDEXER_ADDR_NOPREFIX}" $INDEXER_STAKING_MANAGER) 1 40 )
 
 
-INDEXER_TOTAL_STAKE=$(hex_to_decimal $(call_contract_method  "eth_call" "0xe9260898000000000000000000000000${INDEXER_ADDR_NOPREFIX}" "0x379190a8638d2234533eb6fa4575012fd21eaea5") 1 40)
+INDEXER_TOTAL_STAKE=$(hex_to_decimal $(call_contract_method  "eth_call" "0xe9260898000000000000000000000000${INDEXER_ADDR_NOPREFIX}" $INDEXER_STAKING_MANAGER) 1 40)
 
 
 INDEXER_TOTAL_DEPLOYMENTS=$(hex_to_decimal $(call_contract_method  "eth_call" "0x349ef7e3000000000000000000000000${INDEXER_ADDR_NOPREFIX}" $INDEXER_QUERY_REGISTRY) 1 40)

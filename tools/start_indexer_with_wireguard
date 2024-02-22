@@ -69,6 +69,9 @@ sed -i  "s|password: ".*"|password: \"$DB_PASS\"|" $ROOT_PATH/../.data/grafana/d
 
 echo "" > "$ROOT_PATH"/../src/docker/sh_exporter/scripts/.env
 echo "PRIMARY_BLOCKCHAIN_RPC=\"$PRIMARY_BLOCKCHAIN_RPC\"" > "$ROOT_PATH"/../src/docker/sh_exporter/scripts/.env
+echo "INDEXER_PROXY_PORT=\"${INDEXER_PROXY_PORT:-8375}\"" > "$ROOT_PATH"/../src/docker/sh_exporter/scripts/.env
+echo "COORDINATOR_PORT=\"${COORDINATOR_PORT:-8000}\"" > "$ROOT_PATH"/../src/docker/sh_exporter/scripts/.env
+
 
 #docker network create subquery_indexer
 docker-compose -f $ROOT_PATH/../docker-compose-network.yml up -d

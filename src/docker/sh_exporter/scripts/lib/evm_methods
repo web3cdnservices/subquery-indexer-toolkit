@@ -1,5 +1,5 @@
 ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
-source $ROOT_PATH/../.env
+source $ROOT_PATH/.env
 
 
 generate_payload()
@@ -32,7 +32,7 @@ call_method()
 
 hex_to_decimal()
 {
-RESULT=$(echo "ibase=16; $(echo $1 | sed "s/0x//" | sed 's/^0*//' | tr [:lower:] [:upper:]) " | bc | cut -c $2-$3) 
+RESULT=$(echo "ibase=16; $(echo $1 | sed "s/0x//" | sed 's/^0*//' | tr [:lower:] [:upper:]) " | bc | cut -c $2-$3)
 
 echo $RESULT
 }
