@@ -60,7 +60,8 @@ services:
     command:
       - --network=${NETWORK_NAME:-mainnet}
       - --postgres-host=indexer_db
-      - --ws-endpoint=${PRIMARY_BLOCKCHAIN_RPC}
+      - --network-endpoint=${PRIMARY_BLOCKCHAIN_RPC}
+      - --ws-endpoint=${PRIMARY_BLOCKCHAIN_RPC} #SUPPORT FOR OLD RELEASES
       - --postgres-schema=${POSTGRES_SCHEMA:-coordinator_db}
       - --postgres-password=${DB_PASS}
       - --postgres-port=5432
