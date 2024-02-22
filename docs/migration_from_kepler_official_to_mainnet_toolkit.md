@@ -4,6 +4,9 @@
 
 `PS. for long-live processes please always use tmux or screen. (tmux new)`
 
+## Step 0
+ - Withdraw MATIC from operatos via GUI.
+
 ## # Setup software & prepare env.
 `Run command from root.`
 ```
