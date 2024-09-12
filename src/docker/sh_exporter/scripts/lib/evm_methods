@@ -1,4 +1,7 @@
-RPC="https://polygon.llamarpc.com"
+ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
+source $ROOT_PATH/.env
+
+
 generate_payload()
 {
   cat <<EOF
@@ -16,20 +19,20 @@ EOF
 
 call_contract_method()
 {
-  RESULT=$(curl -H 'content-type: application/json' -s $RPC --data-raw "$(generate_contract_payload $1 $2 $3)" | jq -r ".result")
+  RESULT=$(curl -H 'content-type: application/json' -s $PRIMARY_BLOCKCHAIN_RPC --data-raw "$(generate_contract_payload $1 $2 $3)" | jq -r ".result")
   echo  $RESULT
 }
 
 
 call_method()
 {
-  RESULT=$(curl -H 'content-type: application/json' -s $RPC --data-raw "$(generate_payload $1 $2 $3)" | jq -r ".result")
+  RESULT=$(curl -H 'content-type: application/json' -s $PRIMARY_BLOCKCHAIN_RPC --data-raw "$(generate_payload $1 $2 $3)" | jq -r ".result")
   echo  $RESULT
 }
 
 hex_to_decimal()
 {
-RESULT=$(echo "ibase=16; $(echo $1 | sed "s/0x//" | sed 's/^0*//' | tr [:lower:] [:upper:]) " | bc | cut -c $2-$3) 
+RESULT=$(echo "ibase=16; $(echo $1 | sed "s/0x//" | sed 's/^0*//' | tr [:lower:] [:upper:]) " | bc | cut -c $2-$3)
 
 echo $RESULT
 }

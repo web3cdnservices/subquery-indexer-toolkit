@@ -1,0 +1,68 @@
+#!/bin/bash
+ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
+domain_expression="^([a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\.)+[a-zA-Z]{2,}$"
+
+source "$ROOT_PATH"/../.env;
+
+echo -e "\033[0;31m ♨ Enabling access to services without VPN  \033[0m\n"
+
+read -p '✍ Enter Coordinator domain: ' input_domain
+
+while [ "$input_domain" == "" ] || ! [[ "$input_domain" =~ $domain_expression ]]
+do
+  echo -e "\033[0;31m  ✘ Incorrect domain name. Please check twice and send again. \033[0m \n"
+  read -p '✍ Enter Coordinator domain: ' input_domain
+done
+
+
+
+if [  "$REALM_AUTH_DATA" != "" ]; then
+  echo -e "You already configured login and password for public access. "
+  read -p '✍ Print "yes" if you want generate new login*pass pair Or Ctrl+c for cancel.: ' request_geneeate_newpair
+
+  while [ "$request_geneeate_newpair" != "yes" ]
+  do
+    echo -e "\033[0;31m  ✘ Incorrect answer. \033[0m \n"
+    read -p '✍ Print "yes" if you want generate new login*pass pair Or Ctrl+c for cancel.: ' request_geneeate_newpair
+  done
+fi
+
+
+
+
+read -p '✍ Enter login for auth: ' input_login
+
+while [ "$input_login" == "" ]
+do
+  echo -e "\033[0;31m  ✘ Incorrect login. \033[0m \n"
+  read -p '✍ Enter login for auth: ' input_login
+done
+
+
+read -p '✍ Enter password for auth: ' input_password
+
+while [ "$input_password" == "" ]
+do
+  echo -e "\033[0;31m  ✘ Incorrect password. \033[0m \n"
+  read -p '✍ Enter password for auth: ' input_password
+done
+
+
+REALM_AUTH_DATA_STRING=$(docker run --rm -i xmartlabs/htpasswd "$input_login" "$input_password" )
+#REALM_AUTH_DATA_STRING=$(docker run --rm -i xmartlabs/htpasswd "$input_login" "$input_password" | sed -e s/\\$/\\$\\$/gi )
+
+#if [ "$REALM_AUTH_DATA" != "" ]; then
+#  sed -i "s/REALM_AUTH_DATA=.*/REALM_AUTH_DATA='$(echo "${REALM_AUTH_DATA_STRING@Q}")'/" "$ROOT_PATH"/../.env
+#else
+#
+#fi
+
+echo "REALM_AUTH_DATA='$REALM_AUTH_DATA_STRING'" >> "$ROOT_PATH"/../.env
+
+sed -i 's/ENABLE_COORDINATOR_EXTERNAL=.*/ENABLE_COORDINATOR_EXTERNAL=true/' "$ROOT_PATH"/../.env
+
+#echo "DOMAIN_COORDINATOR=\"$input_domain\"" >> "$ROOT_PATH"/../.env
+sed -i "s|DOMAIN_COORDINATOR=".*"|DOMAIN_COORDINATOR=\"$input_domain\"|" "$ROOT_PATH"/../.env
+
+
+echo -e "\033[0;33m ✈ Ready. Check your Subquery Coordinator here: https://$input_domain with \n login: $input_login \n password: $input_password \n  \033[0m\n"

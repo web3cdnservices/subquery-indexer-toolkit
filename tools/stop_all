@@ -5,6 +5,7 @@ ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
 set -a
 source $ROOT_PATH/../.env
 source $ROOT_PATH/../.PACKAGE_USE
+source $ROOT_PATH/../.PACKAGE_USE_OVERRIDE
 set -a
 
 echo -e "\033[0;33m ♨ Stopping Subquery indexer  \033[0m\n"
@@ -15,6 +16,8 @@ PRIVATE_NETWORK_IP="${IP_PARTS[0]}.${IP_PARTS[1]}.${IP_PARTS[2]}.1"
 
 DOCKER_SUBNET_PARTS=(${DOCKER_SUBNET_MASK//./ })
 DOCKER_SUBNET_PREFIX="${DOCKER_SUBNET_PARTS[0]}.${DOCKER_SUBNET_PARTS[1]}.${DOCKER_SUBNET_PARTS[2]}"
+
+export MMR_PATH="$ROOT_PATH/../.data/mmr"
 
 export PRIVATE_NETWORK_IP=$PRIVATE_NETWORK_IP
 export DOCKER_SUBNET_PREFIX=$DOCKER_SUBNET_PREFIX

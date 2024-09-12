@@ -1,0 +1,10 @@
+#!/bin/bash
+ROOT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; );
+
+source $ROOT_PATH/.env
+#TODO auto-parse https://github.com/subquery/network-contracts/blob/0a31ea235d089b02801be3459456efb4dadb2511/publish/mainnet.json
+
+export INDEXER_REGISTRY_CONTRACT="0xadED5DDFA892250018fE54DB8E8C6CAd45476DC9"
+export INDEXER_STAKING_MANAGER="0x09395a2A58DB45db0da254c7EAa5AC469D8bDc85"
+export INDEXER_QUERY_REGISTRY="0x7d77597ff06795eb1fa796f8e959ed3184e34299" # NOT AVAILABLE YET!!!!
+export SQTOKEN_CONTRACT="0x09395a2A58DB45db0da254c7EAa5AC469D8bDc85"

@@ -10,14 +10,12 @@ x-logging:
 networks:
   indexer_services:
     name: indexer_services
+    external: true
   subquery_indexer:
     name: subquery_indexer
     external: true
 
 services:
-
-
-
   traefik:
     image: traefik:${TRAEFIK_VERSION}
     container_name: traefik

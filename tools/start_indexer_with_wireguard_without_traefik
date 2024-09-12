@@ -15,6 +15,7 @@ fi
 set -a
 source $ROOT_PATH/../.env
 source $ROOT_PATH/../.PACKAGE_USE
+source $ROOT_PATH/../.PACKAGE_USE_OVERRIDE
 set -a
 
 echo -e "\033[0;33m ♨ Start & Update  Subquery indexer  \033[0m\n"
@@ -25,6 +26,8 @@ GATEWAY_IP_ADDRESS=$(/sbin/ip route | awk '/default/ { print $3 }')
 
 DOCKER_SUBNET_PARTS=(${DOCKER_SUBNET_MASK//./ })
 DOCKER_SUBNET_PREFIX="${DOCKER_SUBNET_PARTS[0]}.${DOCKER_SUBNET_PARTS[1]}.${DOCKER_SUBNET_PARTS[2]}"
+
+export MMR_PATH="$ROOT_PATH/../.data/mmr"
 
 
 export PRIVATE_NETWORK_IP=$PRIVATE_NETWORK_IP
@@ -60,6 +63,11 @@ done
 
 sed -i "s|Authorization: Bearer ".*"|Authorization: Bearer  $PROMETHEUS_METRICS_TOKEN|" $ROOT_PATH/../.data/grafana/datasources/prometheus.yml
 sed -i  "s|password: ".*"|password: \"$DB_PASS\"|" $ROOT_PATH/../.data/grafana/datasources/indexer_postgres.yml
+
+echo "" > "$ROOT_PATH"/../src/docker/sh_exporter/scripts/.env
+echo "PRIMARY_BLOCKCHAIN_RPC=\"$PRIMARY_BLOCKCHAIN_RPC\"" >> "$ROOT_PATH"/../src/docker/sh_exporter/scripts/.env
+echo "INDEXER_PROXY_PORT=\"${INDEXER_PROXY_PORT:-8375}\"" >> "$ROOT_PATH"/../src/docker/sh_exporter/scripts/.env
+echo "COORDINATOR_PORT=\"${COORDINATOR_PORT:-8000}\"" >> "$ROOT_PATH"/../src/docker/sh_exporter/scripts/.env
 
 #docker network create subquery_indexer
 docker-compose -f $ROOT_PATH/../docker-compose-network.yml up -d

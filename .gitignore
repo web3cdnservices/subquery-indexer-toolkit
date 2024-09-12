@@ -1,3 +1,4 @@
+.idea
 .data/postgres
 .data/subquery
 .data/wireguard
@@ -10,3 +11,5 @@
 .data/.ipfs
 .env
 SubqueryIndexerHandbook.tar.gz
+.PACKAGE_USE_OVERRIDE
+src/docker/sh_exporter/scripts/.env

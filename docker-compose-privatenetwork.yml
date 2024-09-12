@@ -15,7 +15,7 @@ networks:
 services:
 
   wireguard:
-    image: lscr.io/linuxserver/wireguard:latest
+    image: lscr.io/linuxserver/wireguard:${WIREGUARD_VERSION:-latest}
     container_name: wireguard
     networks:
       subquery_indexer:
@@ -28,7 +28,7 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
       - SERVERPORT=${WIREGUARD_PORT}
-      - PEERS=2
+      - PEERS=${WIREGUARD_PEERS:-2}
 #      - PEERDNS=auto
       - INTERNAL_SUBNET=${WIREGUARD_SUBNET}
       - ALLOWEDIPS=${WIREGUARD_SUBNET}/24,${DOCKER_SUBNET_MASK}/24
